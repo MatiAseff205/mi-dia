@@ -1131,10 +1131,9 @@ async function syncAllToGCal() {
   btn.textContent = 'Sincronizando...';
   btn.disabled = true;
 
-  let ok = 0, fail = 0;
+  let ok = 0, skip = 0, fail = 0;
   for (const tarea of allTareas) {
     if (tarea.recurrentDays && tarea.recurrentDays.length) {
-      // Para recurrentes, sincronizar próximas 4 semanas
       const today = new Date();
       for (let w = 0; w < 4; w++) {
         for (const dow of tarea.recurrentDays) {
@@ -1142,20 +1141,25 @@ async function syncAllToGCal() {
           d.setDate(today.getDate() + ((dow - today.getDay() + 7) % 7) + w * 7);
           const ds = strFromDate(d);
           if (ds >= todayStr()) {
+            // Skip if already synced for this date
+            if (tarea.gcalEventId && tarea.gcalEventId[ds]) { skip++; continue; }
             try { await syncTaskToGCal(tarea, ds); ok++; } catch(e) { fail++; }
+            await new Promise(r => setTimeout(r, 200));
           }
         }
       }
     } else if (tarea.fecha >= todayStr()) {
+      // Skip if already synced
+      if (tarea.gcalEventId && tarea.gcalEventId[tarea.fecha]) { skip++; continue; }
       try { await syncTaskToGCal(tarea, tarea.fecha); ok++; } catch(e) { fail++; }
+      await new Promise(r => setTimeout(r, 200));
     }
-    // Small delay to avoid rate limiting
-    await new Promise(r => setTimeout(r, 200));
   }
 
   btn.textContent = 'Sincronizar todo';
   btn.disabled = false;
-  showToast(`✓ ${ok} eventos sincronizados${fail ? ` (${fail} errores)` : ''}`);
+  if (ok === 0 && skip > 0) showToast(`✓ Todo ya estaba sincronizado`);
+  else showToast(`✓ ${ok} nuevos${skip ? `, ${skip} ya existían` : ''}${fail ? `, ${fail} errores` : ''}`);
 }
 
 // Init Google Auth when page loads
