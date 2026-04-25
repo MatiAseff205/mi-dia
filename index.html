@@ -243,6 +243,53 @@
     }
 
 
+
+    /* Remedio */
+    #remedio-btn {
+      width: 100%; padding: 12px; border-radius: 14px;
+      border: 1px dashed #a29bfe55; background: #a29bfe10;
+      color: #a29bfe; font-family: 'Space Mono', monospace;
+      font-size: 12px; cursor: pointer; letter-spacing: 1px;
+      text-transform: uppercase; transition: all .2s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    #remedio-btn:hover { background: #a29bfe20; border-color: #a29bfe; }
+
+    #remedio-modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: #0a0a14cc; backdrop-filter: blur(8px);
+      z-index: 100; align-items: center; justify-content: center; padding: 20px;
+    }
+    #remedio-modal-overlay.open { display: flex; animation: fadeIn .2s; }
+    #remedio-modal {
+      background: #12121f; border: 1px solid #a29bfe30;
+      border-radius: 20px; padding: 24px; width: 100%; max-width: 440px;
+    }
+    #remedio-modal h2 {
+      font-family: 'Fraunces', serif; font-weight: 300; font-size: 22px;
+      margin-bottom: 6px; color: #a29bfe;
+    }
+    #remedio-modal .subtitle {
+      font-size: 11px; color: #ffffff30; margin-bottom: 20px; letter-spacing: 1px;
+    }
+    .remedio-field { margin-bottom: 14px; }
+    .remedio-field label {
+      font-size: 10px; color: #ffffff40; letter-spacing: 2px;
+      text-transform: uppercase; display: block; margin-bottom: 6px;
+    }
+    .remedio-field input, .remedio-field select {
+      width: 100%; background: #ffffff08; border: 1px solid #ffffff15;
+      border-radius: 10px; padding: 10px 14px; color: #e8e4dc;
+      font-family: 'Space Mono', monospace; font-size: 13px; outline: none;
+    }
+    .remedio-field input:focus { border-color: #a29bfe55; }
+    .remedio-preview {
+      background: #a29bfe10; border: 1px solid #a29bfe25;
+      border-radius: 10px; padding: 12px; margin-bottom: 16px;
+      font-size: 11px; color: #a29bfe; line-height: 1.8;
+      min-height: 40px;
+    }
+
     /* Toast */
     #toast {
       position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
@@ -333,6 +380,53 @@
     <div style="display:flex;gap:6px;flex-shrink:0">
       <button id="gcal-sync-all" style="display:none;background:#6c5ce720;border:1px solid #6c5ce755;border-radius:10px;color:#a29bfe;font-family:'Space Mono',monospace;font-size:10px;padding:6px 10px;cursor:pointer;white-space:nowrap">Sincronizar todo</button>
       <button id="gcal-connect">Conectar</button>
+    </div>
+  </div>
+
+
+  <!-- Botón remedio -->
+  <button id="remedio-btn">💊 Agregar remedio / medicación</button>
+
+  <!-- Modal remedio -->
+  <div id="remedio-modal-overlay">
+    <div id="remedio-modal">
+      <h2>💊 Recordatorio de remedio</h2>
+      <div class="subtitle">Se repetirá automáticamente cada X horas</div>
+      <div class="remedio-field">
+        <label>Nombre del remedio</label>
+        <input type="text" id="rem-nombre" placeholder="Ej: Ibuprofeno 400mg" />
+      </div>
+      <div class="remedio-field">
+        <label>Primera toma (hora de hoy)</label>
+        <input type="time" id="rem-hora" />
+      </div>
+      <div class="remedio-field">
+        <label>Cada cuántas horas</label>
+        <select id="rem-intervalo">
+          <option value="4">Cada 4 horas</option>
+          <option value="6">Cada 6 horas</option>
+          <option value="8" selected>Cada 8 horas</option>
+          <option value="12">Cada 12 horas</option>
+          <option value="24">Cada 24 horas (1 vez por día)</option>
+        </select>
+      </div>
+      <div class="remedio-field">
+        <label>Por cuántos días</label>
+        <select id="rem-dias">
+          <option value="1">1 día</option>
+          <option value="2">2 días</option>
+          <option value="3">3 días</option>
+          <option value="5" selected>5 días</option>
+          <option value="7">7 días</option>
+          <option value="10">10 días</option>
+          <option value="14">14 días</option>
+        </select>
+      </div>
+      <div class="remedio-preview" id="rem-preview">Completá los campos para ver los horarios</div>
+      <div class="modal-btns">
+        <button class="btn-cancel" id="remedio-cancel">Cancelar</button>
+        <button class="btn-save" id="remedio-save" style="background:linear-gradient(135deg,#a29bfe,#6c5ce7)">Agregar recordatorios</button>
+      </div>
     </div>
   </div>
 
@@ -742,6 +836,31 @@ function parsearInput(texto) {
     return { mensaje: "Día limpio. ¿Qué planeás?" };
   }
 
+  // Detectar remedio/medicación en lenguaje natural
+  const remedioMatch = texto.match(/(.+?)\s+cada\s+(\d+)\s*h(?:oras?)?\s+(?:desde\s+(?:las?\s+)?)?(\d{1,2})(?::(\d{2}))?/i);
+  if (remedioMatch || /remedio|medicaci|pastilla|ibuprofeno|amoxicilina|antibiotico/i.test(t)) {
+    if (remedioMatch) {
+      const nombre = remedioMatch[1].replace(/^(tomar|tomo|tengo que tomar|tomar)\s+/i,'').trim();
+      const cada   = parseInt(remedioMatch[2]);
+      let h        = parseInt(remedioMatch[3]);
+      const m      = parseInt(remedioMatch[4] || '0');
+      const horaStr = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+      const horarios = generarHorariosRemedio(horaStr, cada, 5);
+      for (const hor of horarios) {
+        const tarea = {
+          id: Math.random().toString(36).slice(2)+Date.now().toString(36),
+          texto: `💊 ${nombre.charAt(0).toUpperCase()+nombre.slice(1)}`,
+          hora: hor.hora, prioridad: 'alta', tipo: 'recordatorio',
+          completada: false, completedDates: {}, recurrentDays: null,
+          fecha: hor.fecha, esRemedio: true,
+        };
+        saveTask(tarea);
+      }
+      return { mensaje: `💊 Listo, agregué ${horarios.length} recordatorios de ${nombre} cada ${cada}h. ¿Algo más?` };
+    }
+    return { mensaje: 'Para agregar un remedio usá el botón 💊 de abajo, o escribí: "ibuprofeno cada 8 horas desde las 17"' };
+  }
+
   const esCharla = /^(cómo|como|qué|que|cuándo|cuando|hola|buenas|gracias)\b/.test(t)
     && !/tengo|reunion|gym|estudiar|entregar|llamar|ir a|hacer|clase|turno/.test(t);
   if (esCharla) return { mensaje: "Dale, ¿qué actividades querés agregar?" };
@@ -924,6 +1043,110 @@ if('Notification'in window&&Notification.permission==='default') {
 } else if('Notification'in window&&Notification.permission==='granted') {
   notifEnabled=true;
 }
+
+
+
+// ── Remedios ──────────────────────────────────────────────────────────────────
+function generarHorariosRemedio(horaInicio, intervaloHoras, dias) {
+  const horarios = [];
+  const [h, m] = horaInicio.split(':').map(Number);
+  const start = new Date();
+  start.setHours(h, m, 0, 0);
+
+  const totalTomas = Math.ceil((dias * 24) / intervaloHoras);
+  for (let i = 0; i < totalTomas; i++) {
+    const t = new Date(start.getTime() + i * intervaloHoras * 60 * 60 * 1000);
+    // Solo incluir si es hoy o en el futuro
+    if (t >= new Date()) {
+      horarios.push({
+        fecha: strFromDate(t),
+        hora: `${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`,
+      });
+    }
+  }
+  return horarios;
+}
+
+function actualizarPreviewRemedio() {
+  const nombre = document.getElementById('rem-nombre').value.trim();
+  const hora   = document.getElementById('rem-hora').value;
+  const cada   = parseInt(document.getElementById('rem-intervalo').value);
+  const dias   = parseInt(document.getElementById('rem-dias').value);
+  const prev   = document.getElementById('rem-preview');
+
+  if (!nombre || !hora) { prev.textContent = 'Completá los campos para ver los horarios'; return; }
+
+  const horarios = generarHorariosRemedio(hora, cada, dias);
+  const DIAS_CORTO = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  const lines = horarios.slice(0, 6).map(h => {
+    const d = dateFromStr(h.fecha);
+    return `${DIAS_CORTO[d.getDay()]} ${d.getDate()} → ${h.hora}`;
+  });
+  if (horarios.length > 6) lines.push(`... y ${horarios.length - 6} tomas más`);
+  prev.innerHTML = lines.join('<br>');
+}
+
+async function guardarRemedio() {
+  const nombre = document.getElementById('rem-nombre').value.trim();
+  const hora   = document.getElementById('rem-hora').value;
+  const cada   = parseInt(document.getElementById('rem-intervalo').value);
+  const dias   = parseInt(document.getElementById('rem-dias').value);
+
+  if (!nombre || !hora) { showToast('Completá nombre y hora', 'err'); return; }
+
+  const horarios = generarHorariosRemedio(hora, cada, dias);
+  if (!horarios.length) { showToast('No hay tomas futuras para agregar', 'err'); return; }
+
+  document.getElementById('remedio-save').textContent = 'Guardando...';
+  document.getElementById('remedio-save').disabled = true;
+
+  for (const h of horarios) {
+    const tarea = {
+      id: Math.random().toString(36).slice(2) + Date.now().toString(36),
+      texto: `💊 ${nombre}`,
+      hora: h.hora,
+      prioridad: 'alta',
+      tipo: 'recordatorio',
+      completada: false,
+      completedDates: {},
+      recurrentDays: null,
+      fecha: h.fecha,
+      esRemedio: true,
+    };
+    await saveTask(tarea);
+    await new Promise(r => setTimeout(r, 100));
+  }
+
+  document.getElementById('remedio-save').textContent = 'Agregar recordatorios';
+  document.getElementById('remedio-save').disabled = false;
+  cerrarModalRemedio();
+  showToast(`💊 ${horarios.length} recordatorios de ${nombre} agregados`);
+}
+
+function abrirModalRemedio() {
+  // Set default time to now
+  const now = new Date();
+  document.getElementById('rem-hora').value =
+    `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  document.getElementById('rem-nombre').value = '';
+  actualizarPreviewRemedio();
+  document.getElementById('remedio-modal-overlay').classList.add('open');
+}
+
+function cerrarModalRemedio() {
+  document.getElementById('remedio-modal-overlay').classList.remove('open');
+}
+
+document.getElementById('remedio-btn').addEventListener('click', abrirModalRemedio);
+document.getElementById('remedio-cancel').addEventListener('click', cerrarModalRemedio);
+document.getElementById('remedio-save').addEventListener('click', guardarRemedio);
+document.getElementById('remedio-modal-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('remedio-modal-overlay')) cerrarModalRemedio();
+});
+['rem-nombre','rem-hora','rem-intervalo','rem-dias'].forEach(id => {
+  document.getElementById(id).addEventListener('change', actualizarPreviewRemedio);
+  document.getElementById(id).addEventListener('input', actualizarPreviewRemedio);
+});
 
 
 // ── Google Calendar ───────────────────────────────────────────────────────────
