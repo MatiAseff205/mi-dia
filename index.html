@@ -833,13 +833,7 @@ function renderTasks() {
 
     if (card.querySelector('.sync')) {
       card.querySelector('.sync').addEventListener('click', () => {
-        // Store which task to sync after reconnect
-        pendingSyncTaskId = t.id;
-        pendingSyncDate   = t.fecha || selectedDate;
-        // Force fresh token with user interaction
-        gcalToken = null; tokenExpiry = 0;
-        if (tokenClient) tokenClient.requestAccessToken({ prompt: '' });
-        else { showToast('⚠ Reconectá Google desde la barra de arriba', 'err'); }
+        reconnectAndSyncAll();
       });
     }
     card.querySelector('.edit').addEventListener('click', () => openModal(t.id));
@@ -1215,11 +1209,17 @@ function initGoogleAuth() {
       // Drain pending queue
       pendingQueue.forEach(r => r.resolve(gcalToken));
       pendingQueue = [];
-      // Execute pending task sync if any
-      if (pendingSyncTaskId) {
-        const tarea = allTareas.find(x => x.id === pendingSyncTaskId);
-        if (tarea) syncTaskToGCal(tarea, pendingSyncDate);
-        pendingSyncTaskId = null; pendingSyncDate = null;
+      // Auto sync all unsynced tasks after reconnect
+      const unsynced = allTareas.filter(t => !t.gcalEventId || Object.keys(t.gcalEventId).length === 0);
+      if (unsynced.length > 0) {
+        showToast(`Sincronizando ${unsynced.length} tarea(s)...`);
+        for (const t of unsynced) {
+          if (t.fecha >= todayStr() || (t.recurrentDays && t.recurrentDays.length)) {
+            try { await syncTaskToGCal(t, t.fecha || todayStr()); } catch(e) {}
+            await new Promise(r => setTimeout(r, 200));
+          }
+        }
+        renderTasks();
       }
     }
   });
@@ -1269,6 +1269,8 @@ function updateGCalUI() {
     btn.style.fontSize = '11px';
     btn.onclick = connectGCal;
     document.getElementById('gcal-sync-all').style.display = 'none';
+    // Show reconnect hint if was previously connected
+    if (!gcalUser) document.getElementById('gcal-status').textContent = 'No conectado';
   }
 }
 
@@ -1335,6 +1337,14 @@ function tareaToGCalEvent(tarea, dateStr) {
     description: `[Mi Día] tipo:${tarea.tipo} prioridad:${tarea.prioridad}`,
     start, end,
   };
+}
+
+async function reconnectAndSyncAll() {
+  if (!tokenClient) return;
+  showToast('Reconectando con Google...', 'ok');
+  // Request fresh token - this triggers the callback which drains pendingQueue
+  gcalToken = null; tokenExpiry = 0;
+  tokenClient.requestAccessToken({ prompt: '' });
 }
 
 function showToast(msg, type) {
