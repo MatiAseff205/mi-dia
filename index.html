@@ -545,6 +545,8 @@ function getCardColors(tipo, prioridad) {
 
 // ── Estado ────────────────────────────────────────────────────────────────────
 let allTareas   = [];
+let pendingSyncTaskId = null;
+let pendingSyncDate   = null;
 let calMonth    = new Date(); calMonth.setDate(1);
 let selectedDate = todayStr();
 let weekOffset  = 0;
@@ -830,16 +832,14 @@ function renderTasks() {
     });
 
     if (card.querySelector('.sync')) {
-      card.querySelector('.sync').addEventListener('click', async () => {
-        // Force token refresh then sync
+      card.querySelector('.sync').addEventListener('click', () => {
+        // Store which task to sync after reconnect
+        pendingSyncTaskId = t.id;
+        pendingSyncDate   = t.fecha || selectedDate;
+        // Force fresh token with user interaction
         gcalToken = null; tokenExpiry = 0;
-        showToast('Reconectando con Google...', 'ok');
-        try {
-          await getValidToken();
-          await syncTaskToGCal(t, t.fecha || selectedDate);
-        } catch(e) {
-          showToast('⚠ No se pudo sincronizar, reconectá Google', 'err');
-        }
+        if (tokenClient) tokenClient.requestAccessToken({ prompt: '' });
+        else { showToast('⚠ Reconectá Google desde la barra de arriba', 'err'); }
       });
     }
     card.querySelector('.edit').addEventListener('click', () => openModal(t.id));
@@ -1215,6 +1215,12 @@ function initGoogleAuth() {
       // Drain pending queue
       pendingQueue.forEach(r => r.resolve(gcalToken));
       pendingQueue = [];
+      // Execute pending task sync if any
+      if (pendingSyncTaskId) {
+        const tarea = allTareas.find(x => x.id === pendingSyncTaskId);
+        if (tarea) syncTaskToGCal(tarea, pendingSyncDate);
+        pendingSyncTaskId = null; pendingSyncDate = null;
+      }
     }
   });
 
