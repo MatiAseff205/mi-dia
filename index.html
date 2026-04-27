@@ -617,7 +617,13 @@ async function saveTask(tarea) {
 
 async function removeTask(id) {
   const tarea = allTareas.find(x => x.id === id);
-  if (tarea && gcalToken) await deleteTaskFromGCal(tarea, tarea.fecha);
+  if (tarea && gcalUser && tarea.gcalEventId) {
+    // Delete ALL gcal events for this task (could have multiple dates)
+    for (const eventId of Object.values(tarea.gcalEventId)) {
+      try { await gcalRequest('DELETE', `/calendars/primary/events/${eventId}`); } catch(e) {}
+      await new Promise(r => setTimeout(r, 100));
+    }
+  }
   setSyncState('syncing');
   await deleteDoc(doc(db, "tareas", id));
   setSyncState('ok');
