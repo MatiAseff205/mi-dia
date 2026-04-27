@@ -794,6 +794,8 @@ function renderTasks() {
       : '';
     card.style.cssText = `background:${col.bg};border:1px solid ${col.border};${stripeStyle}`;
 
+    const isSynced = !!(t.gcalEventId && Object.keys(t.gcalEventId).length > 0);
+
     card.innerHTML = `
       <button class="task-check" style="border-color:${col.dot};${isDone?`background:${col.dot}`:''}">
         ${isDone ? '✓' : ''}
@@ -809,6 +811,8 @@ function renderTasks() {
         <div class="task-texto">${t.texto}</div>
       </div>
       <div class="task-actions">
+        ${gcalUser && !isSynced ? '<button class="task-btn sync" title="Sincronizar con Google Calendar">🔄</button>' : ''}
+        ${gcalUser && isSynced ? '<span style="font-size:10px;color:#00b89440" title="Sincronizado con Google Calendar">✓cal</span>' : ''}
         <button class="task-btn edit">✎</button>
         <button class="task-btn del">✕</button>
       </div>
@@ -825,6 +829,19 @@ function renderTasks() {
       }
     });
 
+    if (card.querySelector('.sync')) {
+      card.querySelector('.sync').addEventListener('click', async () => {
+        // Force token refresh then sync
+        gcalToken = null; tokenExpiry = 0;
+        showToast('Reconectando con Google...', 'ok');
+        try {
+          await getValidToken();
+          await syncTaskToGCal(t, t.fecha || selectedDate);
+        } catch(e) {
+          showToast('⚠ No se pudo sincronizar, reconectá Google', 'err');
+        }
+      });
+    }
     card.querySelector('.edit').addEventListener('click', () => openModal(t.id));
     card.querySelector('.del').addEventListener('click', () => removeTask(t.id));
 
@@ -1330,7 +1347,7 @@ async function syncTaskToGCal(tarea, dateStr) {
   try {
     if (tarea.gcalEventId && tarea.gcalEventId[key]) {
       const r = await gcalRequest('PUT', `/calendars/primary/events/${tarea.gcalEventId[key]}`, event);
-      if (r) showToast('✓ Actualizado en Google Calendar');
+      if (r) { showToast('✓ Actualizado en Google Calendar'); renderTasks(); }
       else showToast('⚠ No se pudo actualizar', 'err');
     } else {
       const result = await gcalRequest('POST', '/calendars/primary/events', event);
@@ -1338,12 +1355,15 @@ async function syncTaskToGCal(tarea, dateStr) {
         const gcalEventId = { ...(tarea.gcalEventId||{}), [key]: result.id };
         await patchTask(tarea.id, { gcalEventId });
         showToast('✓ Agregado a Google Calendar');
+        renderTasks(); // refresh to show ✓cal
       } else {
-        showToast('⚠ No se pudo crear en Calendar — reconectá Google', 'err');
+        showToast('🔄 No se pudo sync — tocá 🔄 en la tarea para reintentar', 'err');
+        renderTasks(); // show 🔄 button
       }
     }
   } catch(e) {
-    showToast('⚠ Error: ' + e.message, 'err');
+    showToast('🔄 Token expirado — tocá 🔄 en la tarea para reintentar', 'err');
+    renderTasks();
   }
 }
 
