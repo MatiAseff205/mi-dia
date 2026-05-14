@@ -159,7 +159,7 @@
     .task-recurrent { font-size: 10px; color: #00b89480; letter-spacing: 1px; }
     .task-texto { font-family: 'Fraunces', serif; font-size: 15px; color: #e8e4dc; line-height: 1.4; }
     .task-card.done .task-texto { text-decoration: line-through; color: #ffffff30; }
-    .task-actions { display: flex; gap: 4px; flex-shrink: 0; }
+    .task-actions { display: flex; gap: 4px; flex-shrink: 0; position: relative; }
     .task-btn {
       background: transparent; border: none; color: #ffffff20;
       cursor: pointer; font-size: 13px; padding: 2px 5px; transition: color .2s;
@@ -290,6 +290,26 @@
       font-size: 11px; color: #a29bfe; line-height: 1.8;
       min-height: 40px;
     }
+
+
+    /* Delete menu for recurrent tasks */
+    .del-menu {
+      position: absolute; right: 0; top: 28px;
+      background: #1a1a2e; border: 1px solid #ffffff20;
+      border-radius: 10px; overflow: hidden; z-index: 50;
+      min-width: 160px; box-shadow: 0 8px 24px #00000060;
+      animation: fadeIn .15s ease;
+    }
+    .del-menu button {
+      display: block; width: 100%; padding: 10px 14px;
+      background: transparent; border: none; color: #e8e4dc;
+      font-family: 'Space Mono', monospace; font-size: 11px;
+      text-align: left; cursor: pointer; transition: background .15s;
+    }
+    .del-menu button:hover { background: #ffffff10; }
+    .del-menu button.danger { color: #ff4d4d; }
+    .del-menu button.danger:hover { background: #ff4d4d15; }
+    .del-menu .del-sep { height: 1px; background: #ffffff10; }
 
     /* Toast */
     #toast {
@@ -575,6 +595,8 @@ function isCompletedOn(tarea, dateStr) {
 function tareasDelDia(dateStr) {
   const dow = dateFromStr(dateStr).getDay();
   return allTareas.filter(t => {
+    // Skip if this date was explicitly hidden
+    if (t.skippedDates && t.skippedDates[dateStr]) return false;
     if (t.recurrentDays && t.recurrentDays.length) return t.recurrentDays.includes(dow);
     return t.fecha === dateStr;
   });
@@ -839,7 +861,44 @@ function renderTasks() {
       });
     }
     card.querySelector('.edit').addEventListener('click', () => openModal(t.id));
-    card.querySelector('.del').addEventListener('click', () => removeTask(t.id));
+    card.querySelector('.del').addEventListener('click', (e) => {
+      e.stopPropagation();
+      // Close any existing menu
+      document.querySelectorAll('.del-menu').forEach(m => m.remove());
+
+      if (t.recurrentDays && t.recurrentDays.length) {
+        // Show options for recurrent task
+        const menu = document.createElement('div');
+        menu.className = 'del-menu';
+        menu.innerHTML = `
+          <button class="solo-este">Solo este día</button>
+          <div class="del-sep"></div>
+          <button class="danger todos">Borrar siempre</button>
+        `;
+        card.querySelector('.task-actions').appendChild(menu);
+
+        menu.querySelector('.solo-este').addEventListener('click', (e) => {
+          e.stopPropagation();
+          // Add this date to skippedDates so it doesn't show
+          const skippedDates = { ...(t.skippedDates||{}), [selectedDate]: true };
+          patchTask(t.id, { skippedDates });
+          menu.remove();
+          showToast('Solo se ocultó para este día');
+        });
+        menu.querySelector('.todos').addEventListener('click', (e) => {
+          e.stopPropagation();
+          removeTask(t.id);
+          menu.remove();
+        });
+
+        // Close menu clicking outside
+        setTimeout(() => {
+          document.addEventListener('click', () => menu.remove(), { once: true });
+        }, 10);
+      } else {
+        removeTask(t.id);
+      }
+    });
 
     list.appendChild(card);
   }
