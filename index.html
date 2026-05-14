@@ -597,7 +597,12 @@ function tareasDelDia(dateStr) {
   return allTareas.filter(t => {
     // Skip if this date was explicitly hidden
     if (t.skippedDates && t.skippedDates[dateStr]) return false;
-    if (t.recurrentDays && t.recurrentDays.length) return t.recurrentDays.includes(dow);
+    if (t.recurrentDays && t.recurrentDays.length) {
+      if (!t.recurrentDays.includes(dow)) return false;
+      // Respect recurrentUntil
+      if (t.recurrentUntil && dateStr > t.recurrentUntil) return false;
+      return true;
+    }
     return t.fecha === dateStr;
   });
 }
@@ -1011,12 +1016,19 @@ function extraerTarea(frag) {
   if (/reunion|reunión|llamada|clase|turno|médico|evento|cumple/i.test(f)) tipo='evento';
   if (/recordar|recordatorio|no olvidar/i.test(f)) tipo='recordatorio';
 
+  // Default recurrentUntil: 2 months from today
+  let recurrentUntil = null;
+  if (recurrentDays.length) {
+    const until = new Date(); until.setDate(until.getDate() + 8 * 7);
+    recurrentUntil = strFromDate(until);
+  }
   return {
     id: Math.random().toString(36).slice(2)+Date.now().toString(36),
     texto, hora, prioridad, tipo,
     completada: false,
     completedDates: {},
     recurrentDays: recurrentDays.length ? recurrentDays : null,
+    recurrentUntil,
     fecha: recurrentDays.length ? null : selectedDate,
   };
 }
@@ -1059,6 +1071,16 @@ function openModal(id) {
   document.querySelectorAll('.day-chip').forEach(chip=>{
     chip.classList.toggle('sel',!!(t.recurrentDays&&t.recurrentDays.includes(parseInt(chip.dataset.d))));
   });
+  const hasRec = !!(t.recurrentDays && t.recurrentDays.length);
+  document.getElementById('recurrent-until-field').style.display = hasRec ? 'block' : 'none';
+  if (t.recurrentUntil) {
+    document.getElementById('edit-until').value = 'custom';
+    document.getElementById('edit-until-date').value = t.recurrentUntil;
+    document.getElementById('edit-until-date').style.display = 'block';
+  } else {
+    document.getElementById('edit-until').value = '8';
+    document.getElementById('edit-until-date').style.display = 'none';
+  }
   document.getElementById('modal-overlay').classList.add('open');
 }
 function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); editingId=null; }
@@ -1066,6 +1088,16 @@ async function saveModal() {
   const idx=allTareas.findIndex(x=>x.id===editingId); if(idx===-1){closeModal();return;}
   const selDays=[...document.querySelectorAll('.day-chip.sel')].map(c=>parseInt(c.dataset.d));
   const horaVal=document.getElementById('edit-hora').value;
+  const untilSel = document.getElementById('edit-until').value;
+  let recurrentUntil = null;
+  if (selDays.length) {
+    if (untilSel === 'custom') {
+      recurrentUntil = document.getElementById('edit-until-date').value || null;
+    } else {
+      const d = new Date(); d.setDate(d.getDate() + parseInt(untilSel) * 7);
+      recurrentUntil = strFromDate(d);
+    }
+  }
   const updated={
     ...allTareas[idx],
     texto: document.getElementById('edit-texto').value.trim()||allTareas[idx].texto,
@@ -1073,6 +1105,7 @@ async function saveModal() {
     prioridad: document.getElementById('edit-prio').value,
     tipo: document.getElementById('edit-tipo').value,
     recurrentDays: selDays.length?selDays:null,
+    recurrentUntil: recurrentUntil,
     fecha: selDays.length?null:(allTareas[idx].fecha||selectedDate),
   };
   await saveTask(updated);
@@ -1080,7 +1113,15 @@ async function saveModal() {
 }
 
 // ── Eventos UI ────────────────────────────────────────────────────────────────
-document.querySelectorAll('.day-chip').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('sel')));
+document.querySelectorAll('.day-chip').forEach(c=>c.addEventListener('click',()=>{
+  c.classList.toggle('sel');
+  const anySelected = document.querySelectorAll('.day-chip.sel').length > 0;
+  document.getElementById('recurrent-until-field').style.display = anySelected ? 'block' : 'none';
+}));
+
+document.getElementById('edit-until').addEventListener('change', function() {
+  document.getElementById('edit-until-date').style.display = this.value === 'custom' ? 'block' : 'none';
+});
 document.getElementById('modal-cancel').addEventListener('click',closeModal);
 document.getElementById('modal-save').addEventListener('click',saveModal);
 document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('modal-overlay'))closeModal();});
