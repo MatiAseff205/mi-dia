@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -618,17 +619,18 @@ async function saveTask(tarea) {
 }
 
 async function removeTask(id) {
+  // Always delete from Firebase first — never block on GCal
+  setSyncState('syncing');
+  await deleteDoc(doc(db, "tareas", id));
+  setSyncState('ok');
+  // Then try to delete from GCal in background (non-blocking)
   const tarea = allTareas.find(x => x.id === id);
-  if (tarea && gcalUser && tarea.gcalEventId) {
-    // Delete ALL gcal events for this task (could have multiple dates)
+  if (tarea && gcalUser && tarea.gcalEventId && gcalToken) {
     for (const eventId of Object.values(tarea.gcalEventId)) {
       try { await gcalRequest('DELETE', `/calendars/primary/events/${eventId}`); } catch(e) {}
       await new Promise(r => setTimeout(r, 100));
     }
   }
-  setSyncState('syncing');
-  await deleteDoc(doc(db, "tareas", id));
-  setSyncState('ok');
 }
 
 async function patchTask(id, data) {
