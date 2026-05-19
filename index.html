@@ -214,6 +214,39 @@
     .dash-hab-row{display:flex;align-items:center;gap:8px;padding:5px 0}
     .dash-hab-check{width:17px;height:17px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:8px;flex-shrink:0}
     .dash-hab-name{font-size:12px;color:#ffffff40;font-family:'Fraunces',serif}
+
+    /* ── Responsive layout ── */
+    @media (min-width: 768px) {
+      .page-content { max-width: 100%; padding: 54px 32px 60px; }
+
+      /* Dashboard */
+      #dash-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+      #dash-left { display: flex; flex-direction: column; gap: 16px; }
+      #dash-right { display: flex; flex-direction: column; gap: 16px; }
+      .dash-grid { grid-template-columns: 1fr 1fr; }
+
+      /* Agenda */
+      #agenda-layout { display: grid; grid-template-columns: 320px 1fr; gap: 24px; align-items: start; }
+      #agenda-left { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 54px; }
+      #agenda-right { display: flex; flex-direction: column; gap: 16px; }
+
+      /* Hábitos: top = cards 1/4 left + chart 3/4 right, bottom = habit list full width */
+      #hab-top { display: grid; grid-template-columns: 1fr 3fr; gap: 20px; align-items: start; }
+      #hab-top-left { display: flex; flex-direction: column; gap: 12px; }
+      #hab-top-right { }
+      .habit-day { width: 30px; height: 30px; font-size: 10px; }
+
+      /* Finanzas: top = line chart 3/4 + dona 1/4, bottom = cards left + new tx right */
+      #fin-top { display: grid; grid-template-columns: 3fr 1fr; gap: 20px; align-items: start; }
+      #fin-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; margin-top: 20px; }
+      #fin-cards-col { display: flex; flex-direction: column; gap: 0; }
+      #fin-cards-top { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+      #fin-tx-col { display: flex; flex-direction: column; gap: 16px; }
+    }
+    @media (min-width: 1100px) {
+      .page-content { padding: 54px 48px 60px; max-width: 1400px; }
+    }
+
     /* Toast */
     #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#161616;border:1px solid #ffffff12;border-radius:11px;padding:11px 18px;font-size:12px;color:#e8e4dc;display:none;z-index:999;white-space:nowrap;animation:fadeIn .3s}
     #toast.ok{border-color:#00b89435;color:#00b894}
@@ -235,11 +268,17 @@
 <div id="page-dashboard" class="page active">
 <div class="page-content">
   <div><div class="eyebrow" id="dash-eyebrow"></div><div class="pg-title">Dashboard<span> _</span></div></div>
-  <div class="chart-box"><div class="chart-label">Hábitos — progreso diario del mes</div><div style="position:relative;height:150px"><canvas id="chart-dash-hab"></canvas></div></div>
   <div class="dash-grid" id="dash-cards"></div>
-  <div><div class="dash-sec-title">Agenda hoy</div><div id="dash-agenda"></div></div>
-  <div><div class="dash-sec-title">Hábitos hoy</div><div id="dash-habs"></div></div>
-  <div><div class="dash-sec-title">Finanzas del mes</div><div class="dash-grid" id="dash-fin"></div></div>
+  <div id="dash-layout">
+    <div id="dash-left">
+      <div><div class="dash-sec-title">Agenda hoy</div><div id="dash-agenda"></div></div>
+      <div><div class="dash-sec-title">Hábitos hoy</div><div id="dash-habs"></div></div>
+      <div><div class="dash-sec-title">Finanzas del mes</div><div class="dash-grid" id="dash-fin"></div></div>
+    </div>
+    <div id="dash-right">
+      <div class="chart-box"><div class="chart-label">Hábitos — progreso diario</div><div style="position:relative;height:200px"><canvas id="chart-dash-hab"></canvas></div></div>
+    </div>
+  </div>
 </div>
 </div>
 
@@ -251,32 +290,38 @@
     <div id="prog-box" style="display:none"><div id="pct">0%</div><div id="pct-label">0/0</div></div>
   </div>
   <div id="prog-bar-wrap" style="display:none"><div id="prog-bar"></div></div>
-  <div id="cal-wrap">
-    <div id="cal-header"><button class="cal-nav" id="cal-prev">‹</button><div id="cal-title"></div><button class="cal-nav" id="cal-next">›</button></div>
-    <div id="cal-grid"></div>
+  <div id="agenda-layout">
+    <div id="agenda-left">
+      <div id="cal-wrap">
+        <div id="cal-header"><button class="cal-nav" id="cal-prev">‹</button><div id="cal-title"></div><button class="cal-nav" id="cal-next">›</button></div>
+        <div id="cal-grid"></div>
+      </div>
+      <div id="week-wrap">
+        <button class="nav-arrow" id="week-prev" disabled>‹</button>
+        <div id="week-nav"></div>
+        <button class="nav-arrow" id="week-next">›</button>
+      </div>
+      <div id="gcal-bar">
+        <div style="font-size:16px;flex-shrink:0">📅</div>
+        <div style="flex:1"><div class="gcal-title">Google Calendar</div><div id="gcal-status">No conectado</div></div>
+        <div id="gcal-btns"><button id="gcal-sync-all">Sincronizar todo</button><button id="gcal-connect">Conectar</button></div>
+      </div>
+    </div>
+    <div id="agenda-right">
+      <div id="ia-bubble">
+        <div id="ia-avatar">◈</div>
+        <div><div id="ia-label">DÍA IA</div><div id="ia-text">Conectando... ☁️</div></div>
+      </div>
+      <button id="remedio-btn">💊 Agregar remedio / medicación</button>
+      <div id="input-wrap">
+        <textarea id="input" rows="2" placeholder="Ej: reunión a las 10, gym todos los lunes a las 18..."></textarea>
+        <button id="send-btn" disabled>↑</button>
+      </div>
+      <div id="tasks-section" style="display:none"><div id="tasks-header"><div id="tasks-count"></div><button id="clear-btn">Limpiar día</button></div></div>
+      <div id="empty"><div class="icon">◈</div><p>Tu día está en blanco.</p><small>Contale qué tenés planeado</small></div>
+      <div id="task-list"></div>
+    </div>
   </div>
-  <div id="week-wrap">
-    <button class="nav-arrow" id="week-prev" disabled>‹</button>
-    <div id="week-nav"></div>
-    <button class="nav-arrow" id="week-next">›</button>
-  </div>
-  <div id="gcal-bar">
-    <div style="font-size:16px;flex-shrink:0">📅</div>
-    <div style="flex:1"><div class="gcal-title">Google Calendar</div><div id="gcal-status">No conectado</div></div>
-    <div id="gcal-btns"><button id="gcal-sync-all">Sincronizar todo</button><button id="gcal-connect">Conectar</button></div>
-  </div>
-  <div id="ia-bubble">
-    <div id="ia-avatar">◈</div>
-    <div><div id="ia-label">DÍA IA</div><div id="ia-text">Conectando... ☁️</div></div>
-  </div>
-  <button id="remedio-btn">💊 Agregar remedio / medicación</button>
-  <div id="input-wrap">
-    <textarea id="input" rows="2" placeholder="Ej: reunión a las 10, gym todos los lunes a las 18..."></textarea>
-    <button id="send-btn" disabled>↑</button>
-  </div>
-  <div id="tasks-section" style="display:none"><div id="tasks-header"><div id="tasks-count"></div><button id="clear-btn">Limpiar día</button></div></div>
-  <div id="empty"><div class="icon">◈</div><p>Tu día está en blanco.</p><small>Contale qué tenés planeado</small></div>
-  <div id="task-list"></div>
 </div>
 </div>
 
@@ -284,16 +329,26 @@
 <div id="page-habitos" class="page">
 <div class="page-content">
   <div><div class="eyebrow" id="hab-eyebrow"></div><div class="pg-title">Hábitos<span> _</span></div></div>
-  <div class="hab-stats-row" id="hab-stats"></div>
-  <div class="hab-month-nav">
-    <button class="cal-nav" id="hab-prev">‹</button>
-    <div class="hab-month-label" id="hab-month-label"></div>
-    <button class="cal-nav" id="hab-next">›</button>
+
+  <!-- Top: stats 1/4 + chart 3/4 -->
+  <div id="hab-top">
+    <div id="hab-top-left">
+      <div class="hab-stats-row" id="hab-stats" style="grid-template-columns:1fr;display:flex;flex-direction:column;gap:10px"></div>
+      <div class="hab-month-nav" style="margin-top:4px">
+        <button class="cal-nav" id="hab-prev">‹</button>
+        <div class="hab-month-label" id="hab-month-label"></div>
+        <button class="cal-nav" id="hab-next">›</button>
+      </div>
+    </div>
+    <div id="hab-top-right">
+      <div class="chart-box" id="hab-chart-box" style="display:none;margin:0">
+        <div class="chart-label">Progreso diario del mes</div>
+        <div style="position:relative;height:220px"><canvas id="chart-hab-line"></canvas></div>
+      </div>
+    </div>
   </div>
-  <div class="chart-box" id="hab-chart-box" style="display:none">
-    <div class="chart-label">Progreso diario del mes</div>
-    <div style="position:relative;height:140px"><canvas id="chart-hab-line"></canvas></div>
-  </div>
+
+  <!-- Bottom: habit list -->
   <button id="add-habit-btn">+ Agregar hábito</button>
   <div id="habit-list"></div>
 </div>
@@ -303,18 +358,34 @@
 <div id="page-finanzas" class="page">
 <div class="page-content">
   <div><div class="eyebrow">Control financiero personal</div><div class="pg-title">Finanzas<span> _</span></div></div>
-  <div class="fin-cards">
-    <div class="fin-card"><div class="fin-card-label">↑ Ingresos</div><div class="fin-card-val ing" id="fin-ing">$0</div></div>
-    <div class="fin-card"><div class="fin-card-label">↓ Gastos</div><div class="fin-card-val gas" id="fin-gas">$0</div></div>
-    <div class="fin-card"><div class="fin-card-label">= Saldo</div><div class="fin-card-val" id="fin-sal">$0</div></div>
+
+  <!-- Top: line chart 3/4 + dona 1/4 -->
+  <div id="fin-top">
+    <div class="chart-box" style="margin:0">
+      <div class="chart-label">Ingresos vs Gastos</div>
+      <div style="position:relative;height:220px"><canvas id="chart-fin-line"></canvas></div>
+    </div>
+    <div class="chart-box" style="margin:0">
+      <div class="chart-label">Por categoría</div>
+      <div style="position:relative;height:220px"><canvas id="chart-fin-dona"></canvas></div>
+    </div>
   </div>
-  <div class="charts-2col">
-    <div class="chart-box" style="margin:0"><div class="chart-label">Ingresos vs Gastos</div><div style="position:relative;height:150px"><canvas id="chart-fin-line"></canvas></div></div>
-    <div class="chart-box" style="margin:0"><div class="chart-label">Por categoría</div><div style="position:relative;height:150px"><canvas id="chart-fin-dona"></canvas></div></div>
+
+  <!-- Bottom: cards left + nueva tx right -->
+  <div id="fin-bottom">
+    <div id="fin-cards-col">
+      <div id="fin-cards-top">
+        <div class="fin-card"><div class="fin-card-label">↑ Ingresos</div><div class="fin-card-val ing" id="fin-ing">$0</div></div>
+        <div class="fin-card"><div class="fin-card-label">↓ Gastos</div><div class="fin-card-val gas" id="fin-gas">$0</div></div>
+      </div>
+      <div class="fin-card"><div class="fin-card-label">= Saldo</div><div class="fin-card-val" id="fin-sal">$0</div><div id="fin-prev-saldo" style="font-size:10px;margin-top:4px;color:#ffffff25"></div></div>
+      <div style="margin-top:16px"><div class="cat-sec-label">Gastos por categoría</div><div id="cat-list"></div></div>
+    </div>
+    <div id="fin-tx-col">
+      <button id="add-tx-btn">+ Nueva transacción</button>
+      <div><div class="cat-sec-label">Transacciones recientes</div><div class="tx-list" id="tx-list"></div></div>
+    </div>
   </div>
-  <button id="add-tx-btn">+ Nueva transacción</button>
-  <div><div class="cat-sec-label">Gastos por categoría</div><div id="cat-list"></div></div>
-  <div><div class="cat-sec-label">Transacciones recientes</div><div class="tx-list" id="tx-list"></div></div>
 </div>
 </div>
 
@@ -355,7 +426,14 @@
   <div class="modal-box">
     <h2>Nuevo hábito</h2>
     <div class="field"><label>Nombre</label><input type="text" id="hab-nombre" placeholder="Ej: Leer 30 min" /></div>
-    <div class="field"><label>Emoji</label><input type="text" id="hab-emoji" placeholder="📚" maxlength="2" style="width:70px" /></div>
+    <div class="field"><label>Emoji</label>
+      <div style="position:relative;display:inline-block">
+        <button id="emoji-trigger" style="width:48px;height:38px;border-radius:9px;border:1px solid #ffffff10;background:#ffffff08;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center" id="emoji-display">⭐</button>
+        <div id="emoji-picker" style="display:none;position:absolute;top:44px;left:0;background:#161616;border:1px solid #ffffff12;border-radius:12px;padding:10px;z-index:200;width:220px;box-shadow:0 8px 24px #000000a0">
+          <div style="display:flex;flex-wrap:wrap;gap:4px" id="emoji-grid"></div>
+        </div>
+      </div>
+    </div>
     <div class="field"><label>Color</label>
       <div class="hab-color-btns">
         <button class="hab-color-btn sel" data-c="#e8e4dc" style="background:#e8e4dc"></button>
@@ -441,6 +519,15 @@ async function patchH(id,data){await updateDoc(doc(db,'habitos',id),data);}
 async function saveT(t){await setDoc(doc(db,'transacciones',t.id),t);}
 async function delT(id){await deleteDoc(doc(db,'transacciones',id));}
 function curMonthTxs(){const now=new Date(),yr=now.getFullYear(),mo=String(now.getMonth()+1).padStart(2,'0');return txs.filter(t=>t.fecha&&t.fecha.startsWith(yr+'-'+mo));}
+function prevMonthSaldo(){
+  const now=new Date();
+  const prev=new Date(now.getFullYear(),now.getMonth()-1,1);
+  const yr=prev.getFullYear(),mo=String(prev.getMonth()+1).padStart(2,'0');
+  const pt=txs.filter(t=>t.fecha&&t.fecha.startsWith(yr+'-'+mo));
+  const ing=pt.filter(t=>t.tipo==='ingreso').reduce((s,t)=>s+t.monto,0);
+  const gas=pt.filter(t=>t.tipo==='gasto').reduce((s,t)=>s+t.monto,0);
+  return ing-gas;
+}
 
 // Firebase
 sync('syncing');
@@ -637,12 +724,17 @@ function renderHabits(){
 function renderFin(){
   const mt=curMonthTxs(),ing=mt.filter(t=>t.tipo==='ingreso').reduce((s,t)=>s+t.monto,0),gas=mt.filter(t=>t.tipo==='gasto').reduce((s,t)=>s+t.monto,0),sal=ing-gas;
   document.getElementById('fin-ing').textContent=ars(ing);document.getElementById('fin-gas').textContent=ars(gas);document.getElementById('fin-sal').textContent=ars(sal);document.getElementById('fin-sal').style.color=sal>=0?'#e8e4dc':'#ff4d4d';
+  const ps=prevMonthSaldo();
+  const psEl=document.getElementById('fin-prev-saldo');
+  if(psEl){psEl.textContent=(ps>=0?'+':'')+ars(ps)+' del mes anterior';psEl.style.color=ps>=0?'#ffffff30':'#ff4d4d50';}
   const cats={};mt.filter(t=>t.tipo==='gasto').forEach(t=>cats[t.cat]=(cats[t.cat]||0)+t.monto);
   const cl=document.getElementById('cat-list');cl.innerHTML='';
   Object.entries(cats).sort((a,b)=>b[1]-a[1]).forEach(([cat,total])=>{const pct=gas?Math.round(total/gas*100):0,color=CC[cat]||'#ffffff30';const row=document.createElement('div');row.className='cat-row';row.innerHTML='<div class="cat-row-header"><div class="cat-dot" style="background:'+color+'"></div><span class="cat-name">'+(CI[cat]||'📦')+' '+cat+'</span><span class="cat-amounts">'+ars(total)+' · '+pct+'%</span></div><div class="cat-bar"><div class="cat-bar-fill" style="width:'+pct+'%;background:'+color+'"></div></div>';cl.appendChild(row);});
   if(!Object.keys(cats).length)cl.innerHTML='<div style="text-align:center;padding:20px;color:#ffffff12;font-size:12px">Sin gastos este mes</div>';
   const tl=document.getElementById('tx-list');tl.innerHTML='';
-  [...txs].sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,10).forEach(t=>{const item=document.createElement('div');item.className='tx-item';const do2=new Date(t.fecha+'T12:00:00');item.innerHTML='<div class="tx-icon">'+(CI[t.cat]||'📦')+'</div><div class="tx-info"><div class="tx-desc">'+t.desc+'</div><div class="tx-meta">'+t.cat+' · '+do2.getDate()+' '+MESESL[do2.getMonth()]+'</div></div><div class="tx-amount '+(t.tipo==='ingreso'?'ing':'gas')+'">'+(t.tipo==='ingreso'?'+':'-')+ars(t.monto)+'</div><button class="tx-del" data-id="'+t.id+'">✕</button>';item.querySelector('.tx-del').addEventListener('click',()=>{delT(t.id);toast('Eliminado');});tl.appendChild(item);});
+  [...txs].sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,10).forEach(t=>{const item=document.createElement('div');item.className='tx-item';const do2=new Date(t.fecha+'T12:00:00');item.innerHTML='<div class="tx-icon">'+(CI[t.cat]||'📦')+'</div><div class="tx-info"><div class="tx-desc">'+t.desc+'</div><div class="tx-meta">'+t.cat+' · '+do2.getDate()+' '+MESESL[do2.getMonth()]+'</div></div><div class="tx-amount '+(t.tipo==='ingreso'?'ing':'gas')+'">'+(t.tipo==='ingreso'?'+':'-')+ars(t.monto)+'</div><button class="tx-edit" data-id="'+t.id+'" style="background:transparent;border:none;color:#ffffff18;cursor:pointer;font-size:12px;padding:2px 4px">✎</button><button class="tx-del" data-id="'+t.id+'">✕</button>';item.querySelector('.tx-del').addEventListener('click',()=>{delT(t.id);toast('Eliminado');});
+    item.querySelector('.tx-edit').addEventListener('click',()=>openEditTx(t));
+    tl.appendChild(item);});
   if(!txs.length)tl.innerHTML='<div style="text-align:center;padding:20px;color:#ffffff12;font-size:12px">Sin transacciones</div>';
   setTimeout(()=>{buildFinL();buildFinD();},50);
 }
@@ -669,6 +761,15 @@ function renderDash(){
 const COPT={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#161616',titleColor:'#e8e4dc',bodyColor:'#ffffff50',borderColor:'#ffffff10',borderWidth:1}},scales:{x:{grid:{color:'#ffffff05'},ticks:{color:'#ffffff18',font:{size:9}}},y:{grid:{color:'#ffffff05'},ticks:{color:'#ffffff18',font:{size:9}}}}};
 function buildDashChart(){const ctx=document.getElementById('chart-dash-hab');if(!ctx)return;chDash=dc(chDash);const now=new Date(),yr=now.getFullYear(),mo=now.getMonth(),labels=[],data=[];for(let d=1;d<=now.getDate();d++){const ds=yr+'-'+String(mo+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');labels.push(d);if(!habits.length){data.push(0);continue;}data.push(Math.round(habits.filter(h=>h.completions&&h.completions[ds]).length/habits.length*100));}chDash=new Chart(ctx,{type:'line',data:{labels,datasets:[{data,borderColor:'#e8e4dc',backgroundColor:'rgba(232,228,220,0.05)',borderWidth:2,pointRadius:2,pointBackgroundColor:'#e8e4dc',tension:0.4,fill:true}]},options:{...COPT,scales:{x:{grid:{color:'#ffffff05'},ticks:{color:'#ffffff18',font:{size:9}}},y:{grid:{color:'#ffffff05'},ticks:{color:'#ffffff18',font:{size:9},callback:v=>v+'%'},min:0,max:100}}}});}
 function buildHabChart(){const ctx=document.getElementById('chart-hab-line');if(!ctx)return;chHab=dc(chHab);if(!habits.length){document.getElementById('hab-chart-box').style.display='none';return;}document.getElementById('hab-chart-box').style.display='block';const yr=habMonth.getFullYear(),mo=habMonth.getMonth(),today=todayStr(),labels=[],datasets=[];for(let d=1;d<=new Date(yr,mo+1,0).getDate();d++){const ds=yr+'-'+String(mo+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');if(ds>today)break;labels.push(d);}for(const h of habits){const data=labels.map((_,i)=>{const sum=labels.slice(0,i+1).filter((_,j)=>{const d2=yr+'-'+String(mo+1).padStart(2,'0')+'-'+String(labels[j]).padStart(2,'0');return h.completions&&h.completions[d2];}).length;return Math.round(sum/(i+1)*100);});datasets.push({label:h.nombre,data,borderColor:h.color,backgroundColor:h.color+'10',borderWidth:1.5,pointRadius:1,tension:0.4,fill:false});}chHab=new Chart(ctx,{type:'line',data:{labels,datasets},options:{...COPT,plugins:{legend:{display:habits.length<=5,labels:{color:'#ffffff30',font:{size:9},boxWidth:10,padding:6}},tooltip:COPT.plugins.tooltip},scales:{x:{grid:{color:'#ffffff05'},ticks:{color:'#ffffff18',font:{size:9}}},y:{grid:{color:'#ffffff05'},ticks:{color:'#ffffff18',font:{size:9},callback:v=>v+'%'},min:0,max:100}}}});}
+function openEditTx(t){
+  document.getElementById('tx-tipo').value=t.tipo;
+  document.getElementById('tx-desc').value=t.desc;
+  document.getElementById('tx-monto').value=t.monto;
+  document.getElementById('tx-cat').value=t.cat;
+  document.getElementById('tx-fecha').value=t.fecha;
+  document.getElementById('tx-modal').dataset.editId=t.id;
+  document.getElementById('tx-modal').classList.add('open');
+}
 function buildFinL(){const ctx=document.getElementById('chart-fin-line');if(!ctx)return;chFinL=dc(chFinL);const now=new Date(),yr=now.getFullYear(),mo=now.getMonth(),labels=[],id=[],gd=[];for(let d=1;d<=now.getDate();d++){const ds=yr+'-'+String(mo+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');labels.push(d);const dt=txs.filter(t=>t.fecha===ds);id.push(dt.filter(t=>t.tipo==='ingreso').reduce((s,t)=>s+t.monto,0));gd.push(dt.filter(t=>t.tipo==='gasto').reduce((s,t)=>s+t.monto,0));}chFinL=new Chart(ctx,{type:'line',data:{labels,datasets:[{label:'Ingresos',data:id,borderColor:'#00e676',backgroundColor:'#00e67610',borderWidth:2,pointRadius:2,tension:0.4,fill:true},{label:'Gastos',data:gd,borderColor:'#ff4d4d',backgroundColor:'#ff4d4d10',borderWidth:2,pointRadius:2,tension:0.4,fill:true}]},options:{...COPT,plugins:{legend:{display:true,labels:{color:'#ffffff30',font:{size:9},boxWidth:10,padding:6}},tooltip:COPT.plugins.tooltip},scales:{x:{grid:{color:'#ffffff05'},ticks:{color:'#ffffff18',font:{size:9}}},y:{grid:{color:'#ffffff05'},ticks:{color:'#ffffff18',font:{size:9}}}}}});}
 function buildFinD(){const ctx=document.getElementById('chart-fin-dona');if(!ctx)return;chFinD=dc(chFinD);const mt2=curMonthTxs().filter(t=>t.tipo==='gasto'),cats={};mt2.forEach(t=>cats[t.cat]=(cats[t.cat]||0)+t.monto);const entries=Object.entries(cats).sort((a,b)=>b[1]-a[1]);if(!entries.length){chFinD=new Chart(ctx,{type:'doughnut',data:{labels:['Sin gastos'],datasets:[{data:[1],backgroundColor:['#ffffff08'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});return;}chFinD=new Chart(ctx,{type:'doughnut',data:{labels:entries.map(e=>e[0]),datasets:[{data:entries.map(e=>e[1]),backgroundColor:entries.map(e=>CC[e[0]]||'#ffffff30'),borderWidth:0,hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:true,position:'right',labels:{color:'#ffffff30',font:{size:8},boxWidth:8,padding:5}},tooltip:{backgroundColor:'#161616',titleColor:'#e8e4dc',bodyColor:'#ffffff50',callbacks:{label:c=>' '+c.label+': '+ars(c.raw)}}}}});}
 
@@ -700,20 +801,32 @@ document.getElementById('rem-modal').addEventListener('click',e=>{if(e.target===
 ['rem-nombre','rem-hora','rem-cada','rem-dias'].forEach(id=>document.getElementById(id).addEventListener('input',prevRem));
 document.getElementById('rem-save').addEventListener('click',async()=>{const n=document.getElementById('rem-nombre').value.trim(),h=document.getElementById('rem-hora').value,c=parseInt(document.getElementById('rem-cada').value),d=parseInt(document.getElementById('rem-dias').value);if(!n||!h){toast('Completá nombre y hora','err');return;}const hs=genRem(h,c,d);if(!hs.length){toast('No hay tomas futuras','err');return;}document.getElementById('rem-save').textContent='...';document.getElementById('rem-save').disabled=true;for(const hr of hs){await saveTask(mkRem(n,hr.hora,hr.fecha));await new Promise(r=>setTimeout(r,100));}document.getElementById('rem-save').textContent='Agregar';document.getElementById('rem-save').disabled=false;document.getElementById('rem-modal').classList.remove('open');toast('💊 '+hs.length+' recordatorios de '+n);});
 
+
+// Emoji picker
+const EMOJIS=['😀','😎','💪','🏃','📚','✏️','🎯','🎮','🏋️','🧘','🍎','💧','😴','🌅','💼','💰','🚗','🎵','🎨','🏃‍♂️','⭐','🔥','✅','🧠','❤️','🌿','☀️','🌙','⚡','🎸','🏊','🚴','🤸','🧗','🥗','🥤','📱','💻','📝','🗓️','🏆','🎖️','💡','🔑','🛡️','⚔️','🌍','✈️','🏠','👨‍💻'];
+const egrid=document.getElementById('emoji-grid');
+const etrigger=document.getElementById('emoji-trigger');
+const epicker=document.getElementById('emoji-picker');
+let selEmoji='⭐';
+EMOJIS.forEach(em=>{const b=document.createElement('button');b.textContent=em;b.style.cssText='background:transparent;border:none;font-size:20px;cursor:pointer;padding:3px;border-radius:6px;transition:background .15s';b.addEventListener('mouseenter',()=>b.style.background='#ffffff10');b.addEventListener('mouseleave',()=>b.style.background='transparent');b.addEventListener('click',()=>{selEmoji=em;etrigger.textContent=em;epicker.style.display='none';});egrid.appendChild(b);});
+etrigger.addEventListener('click',e=>{e.stopPropagation();epicker.style.display=epicker.style.display==='none'?'block':'none';});
+document.addEventListener('click',()=>epicker.style.display='none');
+epicker.addEventListener('click',e=>e.stopPropagation());
+
 // Habits events
 document.getElementById('hab-prev').addEventListener('click',()=>{habMonth.setMonth(habMonth.getMonth()-1);renderHabits();});
 document.getElementById('hab-next').addEventListener('click',()=>{habMonth.setMonth(habMonth.getMonth()+1);renderHabits();});
-document.getElementById('add-habit-btn').addEventListener('click',()=>{document.getElementById('hab-nombre').value='';document.getElementById('hab-emoji').value='';selHabColor='#e8e4dc';document.querySelectorAll('.hab-color-btn').forEach(b=>b.classList.toggle('sel',b.dataset.c===selHabColor));document.getElementById('hab-modal').classList.add('open');});
+document.getElementById('add-habit-btn').addEventListener('click',()=>{document.getElementById('hab-nombre').value='';selEmoji='⭐';if(etrigger)etrigger.textContent='⭐';selHabColor='#e8e4dc';document.querySelectorAll('.hab-color-btn').forEach(b=>b.classList.toggle('sel',b.dataset.c===selHabColor));document.getElementById('hab-modal').classList.add('open');});
 document.getElementById('hab-cancel').addEventListener('click',()=>document.getElementById('hab-modal').classList.remove('open'));
 document.getElementById('hab-modal').addEventListener('click',e=>{if(e.target===document.getElementById('hab-modal'))document.getElementById('hab-modal').classList.remove('open');});
 document.querySelectorAll('.hab-color-btn').forEach(btn=>btn.addEventListener('click',()=>{selHabColor=btn.dataset.c;document.querySelectorAll('.hab-color-btn').forEach(b=>b.classList.toggle('sel',b.dataset.c===selHabColor));}));
-document.getElementById('hab-save').addEventListener('click',()=>{const n=document.getElementById('hab-nombre').value.trim(),e=document.getElementById('hab-emoji').value.trim()||'⭐';if(!n){toast('Poné un nombre','err');return;}const nh={id:Math.random().toString(36).slice(2)+Date.now().toString(36),nombre:n,emoji:e,color:selHabColor,completions:{}};saveH(nh);document.getElementById('hab-modal').classList.remove('open');toast('✓ Hábito agregado');});
+document.getElementById('hab-save').addEventListener('click',()=>{const n=document.getElementById('hab-nombre').value.trim(),e=selEmoji||'⭐';if(!n){toast('Poné un nombre','err');return;}const nh={id:Math.random().toString(36).slice(2)+Date.now().toString(36),nombre:n,emoji:e,color:selHabColor,completions:{}};saveH(nh);document.getElementById('hab-modal').classList.remove('open');toast('✓ Hábito agregado');});
 
 // Finance events
-document.getElementById('add-tx-btn').addEventListener('click',()=>{document.getElementById('tx-desc').value='';document.getElementById('tx-monto').value='';document.getElementById('tx-fecha').value=todayStr();document.getElementById('tx-modal').classList.add('open');});
+document.getElementById('add-tx-btn').addEventListener('click',()=>{document.getElementById('tx-desc').value='';document.getElementById('tx-monto').value='';document.getElementById('tx-fecha').value=todayStr();delete document.getElementById('tx-modal').dataset.editId;document.getElementById('tx-modal').classList.add('open');});
 document.getElementById('tx-cancel').addEventListener('click',()=>document.getElementById('tx-modal').classList.remove('open'));
 document.getElementById('tx-modal').addEventListener('click',e=>{if(e.target===document.getElementById('tx-modal'))document.getElementById('tx-modal').classList.remove('open');});
-document.getElementById('tx-save').addEventListener('click',()=>{const monto=parseFloat(document.getElementById('tx-monto').value);if(!monto||monto<=0){toast('Ingresá un monto','err');return;}const desc=document.getElementById('tx-desc').value.trim(),tipo=document.getElementById('tx-tipo').value,cat=document.getElementById('tx-cat').value,fecha=document.getElementById('tx-fecha').value;const nt={id:Math.random().toString(36).slice(2)+Date.now().toString(36),tipo,desc:desc||cat,monto,cat,fecha};saveT(nt);document.getElementById('tx-modal').classList.remove('open');toast('✓ Transacción guardada');});
+document.getElementById('tx-save').addEventListener('click',()=>{const monto=parseFloat(document.getElementById('tx-monto').value);if(!monto||monto<=0){toast('Ingresá un monto','err');return;}const desc=document.getElementById('tx-desc').value.trim(),tipo=document.getElementById('tx-tipo').value,cat=document.getElementById('tx-cat').value,fecha=document.getElementById('tx-fecha').value;const modal=document.getElementById('tx-modal'),editId=modal.dataset.editId;if(editId){const existing=txs.find(x=>x.id===editId);saveT({...existing,tipo,desc:desc||cat,monto,cat,fecha});delete modal.dataset.editId;}else{const nt={id:Math.random().toString(36).slice(2)+Date.now().toString(36),tipo,desc:desc||cat,monto,cat,fecha};saveT(nt);}modal.classList.remove('open');toast('✓ Guardado');});
 
 // Init
 setTimeout(initGCal,800);
