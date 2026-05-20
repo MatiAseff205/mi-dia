@@ -745,16 +745,19 @@ function renderHabits(){
   document.getElementById('hab-stats').innerHTML='<div class="hab-stat"><div class="hab-stat-label">Hoy</div><div class="hab-stat-val">'+dt+'/'+habits.length+'</div></div><div class="hab-stat"><div class="hab-stat-label">Este mes</div><div class="hab-stat-val">'+avg+'%</div></div>';
   buildHabChart();
   const list=document.getElementById('habit-list');list.innerHTML='';
+  const sortedHabits=[...habits].sort((a,b)=>(a.orden||0)-(b.orden||0));
   if(!habits.length){list.innerHTML='<div style="text-align:center;padding:40px 0;color:#ffffff12"><p style="font-family:Fraunces,serif;font-size:15px">Sin hábitos todavía.</p></div>';return;}
-  for(const h of habits){
+  for(const h of sortedHabits){
     let done=0,streak=0,ls=true;for(let d=pd;d>=1;d--){const ds=yr+'-'+String(mo+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');if(h.completions&&h.completions[ds]){done++;if(ls)streak++;}else ls=false;}
     const pct=pd?Math.round(done/pd*100):0;
     const row=document.createElement('div');row.className='habit-row';
     let gh='';for(let d=1;d<=dim;d++){const ds=yr+'-'+String(mo+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');const ip=ds<=today,id2=!!(h.completions&&h.completions[ds]);const cls='habit-day'+((!ip)?' future':'')+(id2?' done':'');const st=id2?'background:'+h.color+';border-color:'+h.color:'';gh+='<button class="'+cls+'" data-ds="'+ds+'" style="'+st+'">'+(id2?'✓':(ip?d:''))+'</button>';}
-    row.innerHTML='<div class="habit-row-header"><span class="habit-emoji">'+h.emoji+'</span><span class="habit-name">'+h.nombre+'</span><span class="habit-streak">'+(streak>1?'🔥 '+streak:'')+'</span><span class="habit-pct">'+pct+'%</span><button class="habit-edit-btn" style="background:transparent;border:none;color:#ffffff18;cursor:pointer;font-size:12px;padding:2px 4px">✎</button><button class="habit-del-btn" data-id="'+h.id+'">✕</button></div><div class="habit-grid">'+gh+'</div><div class="habit-progress-bar"><div class="habit-progress-fill" style="width:'+pct+'%;background:'+h.color+'"></div></div>';
+    row.innerHTML='<div class="habit-row-header"><span class="habit-emoji">'+h.emoji+'</span><span class="habit-name">'+h.nombre+'</span><span class="habit-streak">'+(streak>1?'🔥 '+streak:'')+'</span><span class="habit-pct">'+pct+'%</span><button class="habit-up-btn" style="background:transparent;border:none;color:#ffffff18;cursor:pointer;font-size:13px;padding:2px 3px" title="Subir">↑</button><button class="habit-down-btn" style="background:transparent;border:none;color:#ffffff18;cursor:pointer;font-size:13px;padding:2px 3px" title="Bajar">↓</button><button class="habit-edit-btn" style="background:transparent;border:none;color:#ffffff18;cursor:pointer;font-size:12px;padding:2px 4px">✎</button><button class="habit-del-btn" data-id="'+h.id+'">✕</button></div><div class="habit-grid">'+gh+'</div><div class="habit-progress-bar"><div class="habit-progress-fill" style="width:'+pct+'%;background:'+h.color+'"></div></div>';
     row.querySelectorAll('.habit-day:not(.future)').forEach(btn=>{btn.addEventListener('click',()=>{const ds=btn.dataset.ds;if(!h.completions)h.completions={};h.completions[ds]=!h.completions[ds];if(!h.completions[ds])delete h.completions[ds];patchH(h.id,{completions:h.completions});});});
     row.querySelector('.habit-del-btn').addEventListener('click',()=>{delH(h.id);toast('Hábito eliminado');});
     row.querySelector('.habit-edit-btn').addEventListener('click',()=>openEditHab(h));
+    row.querySelector('.habit-up-btn').addEventListener('click',()=>moveHabit(h.id,-1));
+    row.querySelector('.habit-down-btn').addEventListener('click',()=>moveHabit(h.id,1));
     list.appendChild(row);
   }
 }
@@ -834,7 +837,7 @@ document.getElementById('add-habit-btn').addEventListener('click',()=>{document.
 document.getElementById('hab-cancel').addEventListener('click',()=>document.getElementById('hab-modal').classList.remove('open'));
 document.getElementById('hab-modal').addEventListener('click',e=>{if(e.target===document.getElementById('hab-modal'))document.getElementById('hab-modal').classList.remove('open');});
 document.querySelectorAll('.hab-color-btn').forEach(btn=>btn.addEventListener('click',()=>{selHabColor=btn.dataset.c;document.querySelectorAll('.hab-color-btn').forEach(b=>b.classList.toggle('sel',b.dataset.c===selHabColor));}));
-document.getElementById('hab-save').addEventListener('click',()=>{const n=document.getElementById('hab-nombre').value.trim(),e=selEmoji||'⭐';if(!n){toast('Poné un nombre','err');return;}const nh={id:Math.random().toString(36).slice(2)+Date.now().toString(36),nombre:n,emoji:e,color:selHabColor,completions:{}};saveH(nh);document.getElementById('hab-modal').classList.remove('open');toast('✓ Hábito agregado');});
+document.getElementById('hab-save').addEventListener('click',()=>{const n=document.getElementById('hab-nombre').value.trim(),e=selEmoji||'⭐';if(!n){toast('Poné un nombre','err');return;}const maxOrd=habits.length?Math.max(...habits.map(h=>h.orden||0)):0;const nh={id:Math.random().toString(36).slice(2)+Date.now().toString(36),nombre:n,emoji:e,color:selHabColor,completions:{},orden:maxOrd+1};saveH(nh);document.getElementById('hab-modal').classList.remove('open');toast('✓ Hábito agregado');});
 
 // Finance events
 document.getElementById('add-tx-btn').addEventListener('click',()=>{document.getElementById('tx-desc').value='';document.getElementById('tx-monto').value='';document.getElementById('tx-fecha').value=todayStr();document.getElementById('tx-modal').classList.add('open');});
@@ -883,7 +886,9 @@ document.getElementById('edit-hab-save').addEventListener('click',()=>{
   const nombre=document.getElementById('edit-hab-nombre').value.trim();
   if(!nombre){toast('Poné un nombre','err');return;}
   const h=habits.find(x=>x.id===editHabId);
-  if(h)patchH(editHabId,{nombre,emoji:h.emoji,color:editHabColor});
+  const emojiTrigger=document.getElementById('edit-emoji-trigger');
+  const emojiToSave=emojiTrigger?emojiTrigger.textContent.trim()||editHabEmoji||h.emoji||'⭐':editHabEmoji||h.emoji||'⭐';
+  if(h)patchH(editHabId,{nombre,emoji:emojiToSave,color:editHabColor});
   document.getElementById('edit-hab-modal').classList.remove('open');toast('✓ Actualizado');
 });
 
@@ -895,11 +900,26 @@ document.getElementById('meta-save').addEventListener('click',()=>{const v=parse
 
 
 // ── openEditHab ───────────────────────────────────────────────────────────
-let editHabId=null,editHabColor='#e8e4dc';
+let editHabId=null,editHabEmoji='⭐',editHabColor='#e8e4dc';
+
+function moveHabit(id, dir) {
+  const sorted = [...habits].sort((a,b)=>(a.orden||0)-(b.orden||0));
+  const idx = sorted.findIndex(h=>h.id===id);
+  const swapIdx = idx + dir;
+  if(swapIdx < 0 || swapIdx >= sorted.length) return;
+  const a = sorted[idx], b = sorted[swapIdx];
+  const aOrd = a.orden||idx, bOrd = b.orden||swapIdx;
+  patchH(a.id, {orden: bOrd});
+  patchH(b.id, {orden: aOrd});
+}
 function openEditHab(h){
-  editHabId=h.id;editHabColor=h.color||'#e8e4dc';
+  editHabId=h.id;editHabColor=h.color||'#e8e4dc';editHabEmoji=h.emoji||'⭐';
   document.getElementById('edit-hab-nombre').value=h.nombre;
   document.querySelectorAll('#edit-hab-colors .hab-color-btn').forEach(b=>b.classList.toggle('sel',b.dataset.c===editHabColor));
+  const et=document.getElementById('edit-emoji-trigger');
+  if(et){et.textContent=editHabEmoji;}
+  // Rebuild emoji grid so clicks register fresh
+  makeEmojiGrid('edit-emoji-grid','edit-emoji-trigger','edit-emoji-dropdown',em=>{editHabEmoji=em;});
   document.getElementById('edit-hab-modal').classList.add('open');
 }
 document.querySelectorAll('#edit-hab-colors .hab-color-btn').forEach(btn=>btn.addEventListener('click',()=>{editHabColor=btn.dataset.c;document.querySelectorAll('#edit-hab-colors .hab-color-btn').forEach(b=>b.classList.toggle('sel',b.dataset.c===editHabColor));}));
