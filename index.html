@@ -21,7 +21,7 @@
     @keyframes slideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
     @keyframes fadeIn{from{opacity:0}to{opacity:1}}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-    body{font-family:'Space Mono',monospace;color:#e8e4dc;min-height:100vh;background:linear-gradient(160deg,#111 0%,#080808 40%,#050505 100%)}
+    body{font-family:'Space Mono',monospace;color:#e8e4dc;min-height:100vh;background:linear-gradient(160deg,#111 0%,#080808 40%,#050505 100%);-webkit-tap-highlight-color:transparent}
     /* Sidebar */
     #sidebar{position:fixed;left:0;top:0;bottom:0;width:210px;background:#060606;border-right:1px solid #ffffff08;display:flex;flex-direction:column;padding:28px 0 24px;z-index:50;transform:translateX(-100%);transition:transform .28s ease;overflow-y:auto}
     #sidebar.open{transform:translateX(0);box-shadow:4px 0 32px #00000080}
@@ -34,7 +34,7 @@
     .nav-item.active{color:#e8e4dc;border-left-color:#e8e4dc;background:#ffffff08}
     .nav-icon{font-size:14px;flex-shrink:0}
     /* Menu btn */
-    #menu-btn{position:fixed;top:14px;left:14px;z-index:60;width:36px;height:36px;border-radius:10px;background:#111;border:1px solid #ffffff10;color:#ffffff50;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    #menu-btn{position:fixed;top:14px;left:14px;z-index:9999;width:44px;height:44px;border-radius:10px;background:#111;border:1px solid #ffffff10;color:#ffffff50;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
     #menu-btn:hover{background:#1a1a1a;color:#fff}
     /* Pages */
     .page{display:none}
@@ -804,6 +804,7 @@ function buildFinL(){const ctx=document.getElementById('chart-fin-line');if(!ctx
 function buildFinD(){const ctx=document.getElementById('chart-fin-dona');if(!ctx)return;chFinD=dc(chFinD);const mt2=curMonthTxs().filter(t=>t.tipo==='gasto'),cats={};mt2.forEach(t=>cats[t.cat]=(cats[t.cat]||0)+t.monto);const entries=Object.entries(cats).sort((a,b)=>b[1]-a[1]);if(!entries.length){chFinD=new Chart(ctx,{type:'doughnut',data:{labels:['Sin gastos'],datasets:[{data:[1],backgroundColor:['#ffffff08'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});return;}chFinD=new Chart(ctx,{type:'doughnut',data:{labels:entries.map(e=>e[0]),datasets:[{data:entries.map(e=>e[1]),backgroundColor:entries.map(e=>CC[e[0]]||'#ffffff30'),borderWidth:0,hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:true,position:'right',labels:{color:'#ffffff30',font:{size:8},boxWidth:8,padding:5}},tooltip:{backgroundColor:'#161616',titleColor:'#e8e4dc',bodyColor:'#ffffff50',callbacks:{label:c=>' '+c.label+': '+ars(c.raw)}}}}});}
 
 // Nav
+document.getElementById('menu-btn').addEventListener('touchend',(e)=>{e.preventDefault();document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebar-overlay').classList.toggle('open');});
 document.getElementById('menu-btn').addEventListener('click',()=>{document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebar-overlay').classList.toggle('open');});
 document.getElementById('sidebar-overlay').addEventListener('click',()=>{document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');});
 document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('click',()=>{const page=item.dataset.page;document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));item.classList.add('active');document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+page).classList.add('active');document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');if(page==='habitos'){renderHabits();setTimeout(buildHabChart,100);}if(page==='finanzas'){renderFin();setTimeout(()=>{buildFinL();buildFinD();renderAhorro();},100);}if(page==='dashboard'){renderDash();setTimeout(buildDashChart,100);}});});
