@@ -22,9 +22,9 @@
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
     body{font-family:'Space Mono',monospace;color:#e8e4dc;min-height:100vh;background:linear-gradient(160deg,#111 0%,#080808 40%,#050505 100%)}
     /* Sidebar */
-    #sidebar{position:fixed;left:0;top:0;bottom:0;width:210px;background:#060606;border-right:1px solid #ffffff08;display:flex;flex-direction:column;padding:28px 0 24px;z-index:180;transform:translateX(-100%);transition:transform .28s ease;overflow-y:auto}
+    #sidebar{position:fixed;left:0;top:0;bottom:0;width:210px;background:#060606;border-right:1px solid #ffffff08;display:flex;flex-direction:column;padding:28px 0 24px;z-index:9000;transform:translateX(-100%);transition:transform .28s ease;overflow-y:auto}
     #sidebar.open{transform:translateX(0);box-shadow:4px 0 32px #00000080}
-    #sidebar-overlay{display:none;position:fixed;inset:0;background:#00000070;z-index:150}
+    #sidebar-overlay{display:none;position:fixed;inset:0;background:#00000070;z-index:8000}
     #sidebar-overlay.open{display:block}
     #sidebar-logo{font-family:'Fraunces',serif;font-size:20px;font-weight:300;color:#e8e4dc;padding:0 20px 22px;border-bottom:1px solid #ffffff08;margin-bottom:10px}
     #sidebar-logo span{color:#ffffff25}
@@ -33,11 +33,11 @@
     .nav-item.active{color:#e8e4dc;border-left-color:#e8e4dc;background:#ffffff08}
     .nav-icon{font-size:14px;flex-shrink:0}
     /* Menu btn */
-    #menu-btn{position:fixed;top:14px;left:14px;z-index:200;width:36px;height:36px;border-radius:10px;background:#111;border:1px solid #ffffff10;color:#ffffff50;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    #menu-btn{position:fixed;top:14px;left:14px;z-index:9999;pointer-events:all;width:36px;height:36px;border-radius:10px;background:#111;border:1px solid #ffffff10;color:#ffffff50;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center}
     #menu-btn:hover{background:#1a1a1a;color:#fff}
     /* Pages */
     .page{display:none}
-    .page.active{display:block}
+    .page.active{display:block;position:relative;z-index:1}
     .page-content{max-width:580px;margin:0 auto;padding:54px 18px 80px;display:flex;flex-direction:column;gap:16px}
     /* Shared */
     .eyebrow{font-size:11px;color:#ffffff25;letter-spacing:3px;text-transform:uppercase;margin-bottom:6px}
@@ -134,7 +134,7 @@
     .del-menu button.danger{color:#ff4d4d}
     .del-menu .del-sep{height:1px;background:#ffffff10}
     /* Modals */
-    .modal-overlay{display:none;position:fixed;inset:0;background:#080808cc;backdrop-filter:blur(8px);z-index:100;align-items:center;justify-content:center;padding:20px}
+    .modal-overlay{display:none;position:fixed;inset:0;background:#080808cc;backdrop-filter:blur(8px);z-index:99999;align-items:center;justify-content:center;padding:20px}
     .modal-overlay.open{display:flex;animation:fadeIn .2s}
     .modal-box{background:#111;border:1px solid #ffffff10;border-radius:18px;padding:22px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto}
     .modal-box h2{font-family:'Fraunces',serif;font-weight:300;font-size:20px;margin-bottom:18px}
@@ -833,7 +833,7 @@ function renderFin(){
     item.querySelector('.tx-edit').addEventListener('click',()=>openEditTx(t));
     tl.appendChild(item);});
   if(!txs.length)tl.innerHTML='<div style="text-align:center;padding:20px;color:#ffffff12;font-size:12px">Sin transacciones</div>';
-  setTimeout(()=>{buildFinL();buildFinD();},50);renderAhorro();
+  setTimeout(()=>{buildFinL();buildFinD();renderAhorro();},50);
 }
 
 // Dashboard
@@ -938,7 +938,7 @@ function buildFinD(){const ctx=document.getElementById('chart-fin-dona');if(!ctx
 // Nav
 document.getElementById('menu-btn').addEventListener('click',()=>{document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebar-overlay').classList.toggle('open');});
 document.getElementById('sidebar-overlay').addEventListener('click',()=>{document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');});
-document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('click',()=>{const page=item.dataset.page;document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));item.classList.add('active');document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+page).classList.add('active');document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');if(page==='habitos')renderHabits();if(page==='finanzas')renderFin();if(page==='dashboard')renderDash();});});
+document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('click',()=>{const page=item.dataset.page;document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));item.classList.add('active');document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+page).classList.add('active');document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');if(page==='habitos')renderHabits();if(page==='finanzas'){renderFin();renderAhorro();}if(page==='dashboard')renderDash();});});
 
 // Agenda events
 document.getElementById('cal-prev').addEventListener('click',()=>{calMonth.setMonth(calMonth.getMonth()-1);buildCal();});
