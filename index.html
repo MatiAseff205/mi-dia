@@ -34,12 +34,13 @@
     .nav-item.active{color:#e8e4dc;border-left-color:#e8e4dc;background:#ffffff08}
     .nav-icon{font-size:14px;flex-shrink:0}
     /* Menu btn */
-    #menu-btn{position:fixed;top:14px;left:14px;z-index:9999;width:44px;height:44px;border-radius:10px;background:#111;border:1px solid #ffffff10;color:#ffffff50;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
+    #topbar{position:fixed;top:0;left:0;right:0;height:52px;z-index:9999;display:flex;align-items:center;padding:0 12px;background:linear-gradient(180deg,#080808 60%,transparent);pointer-events:none}
+    #menu-btn{width:44px;height:44px;border-radius:10px;background:#111;border:1px solid #ffffff15;color:#ffffff70;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;-webkit-tap-highlight-color:transparent;flex-shrink:0;pointer-events:all}
     #menu-btn:hover{background:#1a1a1a;color:#fff}
     /* Pages */
     .page{display:none}
     .page.active{display:block}
-    .page-content{max-width:580px;margin:0 auto;padding:54px 18px 80px;display:flex;flex-direction:column;gap:16px}
+    .page-content{max-width:580px;margin:0 auto;padding:60px 18px 80px;display:flex;flex-direction:column;gap:16px}
     /* Shared */
     .eyebrow{font-size:11px;color:#ffffff25;letter-spacing:3px;text-transform:uppercase;margin-bottom:6px}
     .pg-title{font-family:'Fraunces',serif;font-size:36px;font-weight:300;letter-spacing:-1px;line-height:1}
@@ -253,7 +254,7 @@
   </style>
 </head>
 <body>
-<button id="menu-btn">☰</button>
+<div id="topbar"><button id="menu-btn">☰</button></div>
 <div id="sidebar-overlay"></div>
 <div id="sidebar">
   <div id="sidebar-logo">Mi Día<span> _</span></div>
