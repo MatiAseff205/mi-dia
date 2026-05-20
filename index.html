@@ -218,38 +218,51 @@
     .dash-hab-name{font-size:12px;color:#ffffff40;font-family:'Fraunces',serif}
 
     /* ── Responsive layout ── */
+
+    /* ── Mobile base styles ── */
+    #hab-top { display: flex; flex-direction: column; gap: 16px; }
+    #hab-top-left { display: flex; flex-direction: column; gap: 12px; }
+    #fin-top { display: flex; flex-direction: column; gap: 16px; }
+    #fin-bottom { display: flex; flex-direction: column; gap: 16px; margin-top: 0; }
+    #fin-cards-col { display: flex; flex-direction: column; gap: 10px; }
+    #fin-cards-top { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    #fin-tx-col { display: flex; flex-direction: column; gap: 16px; }
+    #dash-layout { display: flex; flex-direction: column; gap: 16px; }
+    #dash-left { display: flex; flex-direction: column; gap: 16px; }
+    #dash-right { display: flex; flex-direction: column; gap: 16px; }
+    #agenda-layout { display: flex; flex-direction: column; gap: 16px; }
+    #agenda-left { display: flex; flex-direction: column; gap: 16px; }
+    #agenda-right { display: flex; flex-direction: column; gap: 16px; }
+    /* dona chart: limit height on mobile */
+    #chart-fin-dona-wrap { height: 200px; }
+
+    /* ── Desktop overrides ── */
     @media (min-width: 768px) {
       .page-content { max-width: 100%; padding: 54px 32px 60px; }
 
       /* Dashboard */
       #dash-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
-      #dash-left { display: flex; flex-direction: column; gap: 16px; }
-      #dash-right { display: flex; flex-direction: column; gap: 16px; }
       .dash-grid { grid-template-columns: 1fr 1fr; }
 
       /* Agenda */
       #agenda-layout { display: grid; grid-template-columns: 320px 1fr; gap: 24px; align-items: start; }
-      #agenda-left { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 54px; }
-      #agenda-right { display: flex; flex-direction: column; gap: 16px; }
+      #agenda-left { position: sticky; top: 54px; }
 
-      /* Hábitos: top = cards 1/4 left + chart 3/4 right, bottom = habit list full width */
+      /* Hábitos */
       #hab-top { display: grid; grid-template-columns: 1fr 3fr; gap: 20px; align-items: start; }
-      #hab-top-left { display: flex; flex-direction: column; gap: 12px; }
-      #hab-top-right { }
       .habit-day { width: 30px; height: 30px; font-size: 10px; }
 
-      /* Finanzas: top = line chart 3/4 + dona 1/4, bottom = cards left + new tx right */
+      /* Finanzas */
       #fin-top { display: grid; grid-template-columns: 3fr 1fr; gap: 20px; align-items: start; }
-      #fin-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; margin-top: 20px; }
-      #fin-cards-col { display: flex; flex-direction: column; gap: 0; }
-      #fin-cards-top { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-      #fin-tx-col { display: flex; flex-direction: column; gap: 16px; }
+      #fin-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; margin-top: 0; }
     }
     @media (min-width: 1100px) {
       .page-content { padding: 54px 48px 60px; max-width: 1400px; }
     }
 
     /* Toast */
+    .ahorro-item { background:#ffb84408;border:1px solid #ffb84420;border-radius:12px;padding:11px 13px;display:flex;align-items:center;gap:11px;margin-bottom:7px; }
+    .ahorro-amount { font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:#ffb844;flex-shrink:0; }
     #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#161616;border:1px solid #ffffff12;border-radius:11px;padding:11px 18px;font-size:12px;color:#e8e4dc;display:none;z-index:999;white-space:nowrap;animation:fadeIn .3s}
     #toast.ok{border-color:#00b89435;color:#00b894}
     #toast.err{border-color:#ff4d4d35;color:#ff4d4d}
@@ -269,7 +282,7 @@
 <!-- DASHBOARD -->
 <div id="page-dashboard" class="page active">
 <div class="page-content">
-  <div><div class="eyebrow" id="dash-eyebrow"></div><div class="pg-title">Dashboard<span> _</span></div></div>
+  <div style="padding-left:48px"><div class="eyebrow" id="dash-eyebrow"></div><div class="pg-title">Dashboard<span> _</span></div></div>
   <div class="dash-grid" id="dash-cards"></div>
   <div id="dash-layout">
     <div id="dash-left">
@@ -287,7 +300,7 @@
 <!-- AGENDA -->
 <div id="page-agenda" class="page">
 <div class="page-content">
-  <div style="display:flex;justify-content:space-between;align-items:flex-start">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-left:48px">
     <div><div class="eyebrow" id="date-label"></div><div class="pg-title">Mi Día<span> _</span><span id="sync-dot"></span></div></div>
     <div id="prog-box" style="display:none"><div id="pct">0%</div><div id="pct-label">0/0</div></div>
   </div>
@@ -330,7 +343,7 @@
 <!-- HABITOS -->
 <div id="page-habitos" class="page">
 <div class="page-content">
-  <div><div class="eyebrow" id="hab-eyebrow"></div><div class="pg-title">Hábitos<span> _</span></div></div>
+  <div style="padding-left:48px"><div class="eyebrow" id="hab-eyebrow"></div><div class="pg-title">Hábitos<span> _</span></div></div>
 
   <!-- Top: stats 1/4 + chart 3/4 -->
   <div id="hab-top">
@@ -359,7 +372,7 @@
 <!-- FINANZAS -->
 <div id="page-finanzas" class="page">
 <div class="page-content">
-  <div><div class="eyebrow">Control financiero personal</div><div class="pg-title">Finanzas<span> _</span></div></div>
+  <div style="padding-left:48px"><div class="eyebrow">Control financiero personal</div><div class="pg-title">Finanzas<span> _</span></div></div>
 
   <!-- Top: line chart 3/4 + dona 1/4 -->
   <div id="fin-top">
@@ -369,7 +382,7 @@
     </div>
     <div class="chart-box" style="margin:0">
       <div class="chart-label">Por categoría</div>
-      <div style="position:relative;height:220px"><canvas id="chart-fin-dona"></canvas></div>
+      <div id="chart-fin-dona-wrap" style="position:relative;height:220px"><canvas id="chart-fin-dona"></canvas></div>
     </div>
   </div>
 
@@ -386,6 +399,33 @@
     <div id="fin-tx-col">
       <button id="add-tx-btn">+ Nueva transacción</button>
       <div><div class="cat-sec-label">Transacciones recientes</div><div class="tx-list" id="tx-list"></div></div>
+    </div>
+  </div>
+  <!-- Ahorro section -->
+  <div id="fin-ahorro-section" style="margin-top:8px">
+    <div class="chart-box" style="border-color:#ffb84420">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div>
+          <div class="chart-label" style="color:#ffb844;margin-bottom:4px">🏦 Ahorro</div>
+          <div style="font-family:'Fraunces',serif;font-size:32px;font-weight:300;color:#ffb844" id="ahorro-total">$0</div>
+          <div style="font-size:10px;color:#ffffff25;margin-top:3px" id="ahorro-count"></div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:10px;color:#ffffff25;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px">Meta mensual</div>
+          <div style="font-family:'Fraunces',serif;font-size:18px;color:#ffffff40" id="ahorro-meta-display">Sin meta</div>
+          <button id="set-meta-btn" style="margin-top:6px;background:transparent;border:1px solid #ffb84430;border-radius:8px;color:#ffb84470;font-family:'Space Mono',monospace;font-size:10px;padding:4px 10px;cursor:pointer">Definir meta</button>
+        </div>
+      </div>
+      <div id="ahorro-progress-wrap" style="display:none;margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+          <span style="font-size:10px;color:#ffffff25">Progreso</span>
+          <span style="font-size:10px;color:#ffb844" id="ahorro-pct">0%</span>
+        </div>
+        <div style="height:4px;background:#ffffff08;border-radius:2px;overflow:hidden">
+          <div id="ahorro-progress-bar" style="height:100%;background:#ffb844;border-radius:2px;transition:width .5s;width:0%"></div>
+        </div>
+      </div>
+      <div class="tx-list" id="ahorro-list"></div>
     </div>
   </div>
 </div>
@@ -455,7 +495,7 @@
 <div class="modal-overlay" id="tx-modal">
   <div class="modal-box">
     <h2>Nueva transacción</h2>
-    <div class="field"><label>Tipo</label><select id="tx-tipo"><option value="ingreso">Ingreso</option><option value="gasto" selected>Gasto</option></select></div>
+    <div class="field"><label>Tipo</label><select id="tx-tipo"><option value="ingreso">Ingreso</option><option value="gasto" selected>Gasto</option><option value="ahorro">Ahorro</option></select></div>
     <div class="field"><label>Descripción (opcional)</label><input type="text" id="tx-desc" placeholder="Ej: Supermercado" /></div>
     <div class="field"><label>Monto (ARS)</label><input type="number" id="tx-monto" placeholder="0" min="0" /></div>
     <div class="field"><label>Categoría</label>
@@ -473,6 +513,50 @@
   </div>
 </div>
 
+<!-- Edit habit modal -->
+<div class="modal-overlay" id="edit-hab-modal">
+  <div class="modal-box">
+    <h2>Editar hábito</h2>
+    <div class="field"><label>Nombre</label><input type="text" id="edit-hab-nombre" /></div>
+    <div class="field"><label>Emoji</label>
+      <div style="position:relative;display:inline-block">
+        <button id="edit-emoji-trigger" style="width:48px;height:38px;border-radius:9px;border:1px solid #ffffff10;background:#ffffff08;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center">⭐</button>
+        <div id="edit-emoji-picker" style="display:none;position:absolute;top:44px;left:0;background:#161616;border:1px solid #ffffff12;border-radius:12px;padding:10px;z-index:200;width:220px;box-shadow:0 8px 24px #000000a0">
+          <div style="display:flex;flex-wrap:wrap;gap:4px" id="edit-emoji-grid"></div>
+        </div>
+      </div>
+    </div>
+    <div class="field"><label>Color</label>
+      <div class="hab-color-btns" id="edit-hab-colors">
+        <button class="hab-color-btn" data-c="#e8e4dc" style="background:#e8e4dc"></button>
+        <button class="hab-color-btn" data-c="#00e676" style="background:#00e676"></button>
+        <button class="hab-color-btn" data-c="#ff4d4d" style="background:#ff4d4d"></button>
+        <button class="hab-color-btn" data-c="#ffb844" style="background:#ffb844"></button>
+        <button class="hab-color-btn" data-c="#fd79a8" style="background:#fd79a8"></button>
+        <button class="hab-color-btn" data-c="#4ecdc4" style="background:#4ecdc4"></button>
+        <button class="hab-color-btn" data-c="#a29bfe" style="background:#a29bfe"></button>
+        <button class="hab-color-btn" data-c="#74b9ff" style="background:#74b9ff"></button>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" id="edit-hab-cancel">Cancelar</button>
+      <button class="btn-save" id="edit-hab-save">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Meta ahorro modal -->
+<div class="modal-overlay" id="meta-modal">
+  <div class="modal-box">
+    <h2 style="color:#ffb844">Meta de ahorro</h2>
+    <div class="field"><label>Meta mensual (ARS)</label><input type="number" id="meta-monto" placeholder="Ej: 50000" min="0" /></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" id="meta-cancel">Cancelar</button>
+      <button class="btn-save" id="meta-save" style="background:#ffb844;color:#080808">Guardar</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script type="module">
@@ -482,7 +566,7 @@ import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, updateDoc
 const FB={apiKey:"AIzaSyB0oX62ZyI0-GL_DtFnzYWrUnaZriEArvo",authDomain:"mi-dia-agenda.firebaseapp.com",projectId:"mi-dia-agenda",storageBucket:"mi-dia-agenda.firebasestorage.app",messagingSenderId:"266360886420",appId:"1:266360886420:web:ecc0414d6f3d6821179081"};
 const GCAL_ID='293982751859-5udrcb7dd44j45qpl7ks15ailleocc3v.apps.googleusercontent.com';
 const GCAL_SCOPE='https://www.googleapis.com/auth/calendar.events';
-const db=getFirestore(initializeApp(FB)),COL=collection(db,"tareas"),HCOL=collection(db,"habitos"),TCOL=collection(db,"transacciones");
+const db=getFirestore(initializeApp(FB)),COL=collection(db,"tareas"),HCOL=collection(db,"habitos"),TCOL=collection(db,"transacciones"),ACOL=collection(db,"ahorro");
 
 let allTareas=[],selDate=todayStr(),weekOff=0;
 let calMonth=new Date();calMonth.setDate(1);
@@ -491,6 +575,8 @@ let habits=[];
 let habMonth=new Date();habMonth.setDate(1);
 let selHabColor='#e8e4dc';
 let txs=[];
+let ahorros=[];
+let metaAhorro=parseFloat(localStorage.getItem('midia-meta-ahorro')||'0');
 let gcalToken=null,gcalUser=localStorage.getItem('gcal-user')||null;
 let tokenExp=0,tokenClient=null,isRef=false,pendQ=[];
 let chDash=null,chHab=null,chFinL=null,chFinD=null;
@@ -519,6 +605,8 @@ async function saveH(h){await setDoc(doc(db,'habitos',h.id),h);}
 async function delH(id){await deleteDoc(doc(db,'habitos',id));}
 async function patchH(id,data){await updateDoc(doc(db,'habitos',id),data);}
 async function saveT(t){await setDoc(doc(db,'transacciones',t.id),t);}
+async function saveA(a){await setDoc(doc(db,'ahorro',a.id),a);}
+async function delA(id){await deleteDoc(doc(db,'ahorro',id));}
 async function delT(id){await deleteDoc(doc(db,'transacciones',id));}
 function curMonthTxs(){const now=new Date(),yr=now.getFullYear(),mo=String(now.getMonth()+1).padStart(2,'0');return txs.filter(t=>t.fecha&&t.fecha.startsWith(yr+'-'+mo));}
 function prevMonthSaldo(){
@@ -554,6 +642,12 @@ onSnapshot(TCOL,snap=>{
   txs=snap.docs.map(d=>({id:d.id,...d.data()}));
   if(document.getElementById('page-finanzas').classList.contains('active'))renderFin();
   renderDash();
+},()=>{});
+
+// Ahorro listener
+onSnapshot(ACOL,snap=>{
+  ahorros=snap.docs.map(d=>({id:d.id,...d.data()}));
+  if(document.getElementById('page-finanzas').classList.contains('active'))renderAhorro();
 },()=>{});
 
 async function saveTask(t){sync('syncing');await setDoc(doc(db,'tareas',t.id),t);sync('ok');if(gcalUser&&gcalToken)gSync(t,t.fecha||selDate).catch(()=>{});}
@@ -715,9 +809,10 @@ function renderHabits(){
     const pct=pd?Math.round(done/pd*100):0;
     const row=document.createElement('div');row.className='habit-row';
     let gh='';for(let d=1;d<=dim;d++){const ds=yr+'-'+String(mo+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');const ip=ds<=today,id2=!!(h.completions&&h.completions[ds]);const cls='habit-day'+((!ip)?' future':'')+(id2?' done':'');const st=id2?'background:'+h.color+';border-color:'+h.color:'';gh+='<button class="'+cls+'" data-ds="'+ds+'" style="'+st+'">'+(id2?'✓':(ip?d:''))+'</button>';}
-    row.innerHTML='<div class="habit-row-header"><span class="habit-emoji">'+h.emoji+'</span><span class="habit-name">'+h.nombre+'</span><span class="habit-streak">'+(streak>1?'🔥 '+streak:'')+'</span><span class="habit-pct">'+pct+'%</span><button class="habit-del-btn" data-id="'+h.id+'">✕</button></div><div class="habit-grid">'+gh+'</div><div class="habit-progress-bar"><div class="habit-progress-fill" style="width:'+pct+'%;background:'+h.color+'"></div></div>';
+    row.innerHTML='<div class="habit-row-header"><span class="habit-emoji">'+h.emoji+'</span><span class="habit-name">'+h.nombre+'</span><span class="habit-streak">'+(streak>1?'🔥 '+streak:'')+'</span><span class="habit-pct">'+pct+'%</span><button class="habit-edit-btn" data-id="'+h.id+'" style="background:transparent;border:none;color:#ffffff18;cursor:pointer;font-size:12px;padding:2px 4px">✎</button><button class="habit-del-btn" data-id="'+h.id+'">✕</button></div><div class="habit-grid">'+gh+'</div><div class="habit-progress-bar"><div class="habit-progress-fill" style="width:'+pct+'%;background:'+h.color+'"></div></div>';
     row.querySelectorAll('.habit-day:not(.future)').forEach(btn=>{btn.addEventListener('click',()=>{const ds=btn.dataset.ds;if(!h.completions)h.completions={};h.completions[ds]=!h.completions[ds];if(!h.completions[ds])delete h.completions[ds];patchH(h.id,{completions:h.completions});});});
     row.querySelector('.habit-del-btn').addEventListener('click',()=>{delH(h.id);toast('Hábito eliminado');});
+    row.querySelector('.habit-edit-btn').addEventListener('click',()=>openEditHab(h));
     list.appendChild(row);
   }
 }
@@ -738,7 +833,7 @@ function renderFin(){
     item.querySelector('.tx-edit').addEventListener('click',()=>openEditTx(t));
     tl.appendChild(item);});
   if(!txs.length)tl.innerHTML='<div style="text-align:center;padding:20px;color:#ffffff12;font-size:12px">Sin transacciones</div>';
-  setTimeout(()=>{buildFinL();buildFinD();},50);
+  setTimeout(()=>{buildFinL();buildFinD();},50);renderAhorro();
 }
 
 // Dashboard
@@ -762,6 +857,38 @@ function renderDash(){
 // Charts
 const COPT={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#161616',titleColor:'#e8e4dc',bodyColor:'#ffffff50',borderColor:'#ffffff10',borderWidth:1}},scales:{x:{grid:{color:'#ffffff05'},ticks:{color:'#ffffff18',font:{size:9}}},y:{grid:{color:'#ffffff05'},ticks:{color:'#ffffff18',font:{size:9}}}}};
 function buildDashChart(){const ctx=document.getElementById('chart-dash-hab');if(!ctx)return;chDash=dc(chDash);const now=new Date(),yr=now.getFullYear(),mo=now.getMonth(),labels=[],data=[];for(let d=1;d<=now.getDate();d++){const ds=yr+'-'+String(mo+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');labels.push(d);if(!habits.length){data.push(0);continue;}data.push(Math.round(habits.filter(h=>h.completions&&h.completions[ds]).length/habits.length*100));}chDash=new Chart(ctx,{type:'line',data:{labels,datasets:[{data,borderColor:'#e8e4dc',backgroundColor:'rgba(232,228,220,0.05)',borderWidth:2,pointRadius:2,pointBackgroundColor:'#e8e4dc',tension:0.4,fill:true}]},options:{...COPT,scales:{x:{grid:{color:'#ffffff05'},ticks:{color:'#ffffff18',font:{size:9}}},y:{grid:{color:'#ffffff05'},ticks:{color:'#ffffff18',font:{size:9},callback:v=>v+'%'},min:0,max:100}}}});}
+let editHabId=null, editHabEmoji='⭐', editHabColor='#e8e4dc';
+
+function openEditHab(h){
+  editHabId=h.id; editHabEmoji=h.emoji||'⭐'; editHabColor=h.color||'#e8e4dc';
+  document.getElementById('edit-hab-nombre').value=h.nombre;
+  document.getElementById('edit-emoji-trigger').textContent=editHabEmoji;
+  document.querySelectorAll('#edit-hab-colors .hab-color-btn').forEach(b=>b.classList.toggle('sel',b.dataset.c===editHabColor));
+  document.getElementById('edit-hab-modal').classList.add('open');
+}
+
+// Edit habit emoji picker
+const eetrigger=document.getElementById('edit-emoji-trigger');
+const eepicker=document.getElementById('edit-emoji-picker');
+const eegrid=document.getElementById('edit-emoji-grid');
+EMOJIS.forEach(em=>{const b=document.createElement('button');b.textContent=em;b.style.cssText='background:transparent;border:none;font-size:20px;cursor:pointer;padding:3px;border-radius:6px';b.addEventListener('mouseenter',()=>b.style.background='#ffffff10');b.addEventListener('mouseleave',()=>b.style.background='transparent');b.addEventListener('click',()=>{editHabEmoji=em;eetrigger.textContent=em;eepicker.style.display='none';});eegrid.appendChild(b);});
+eetrigger.addEventListener('click',e=>{e.stopPropagation();eepicker.style.display=eepicker.style.display==='none'?'block':'none';});
+document.addEventListener('click',()=>eepicker.style.display='none');
+eepicker.addEventListener('click',e=>e.stopPropagation());
+
+document.querySelectorAll('#edit-hab-colors .hab-color-btn').forEach(btn=>btn.addEventListener('click',()=>{editHabColor=btn.dataset.c;document.querySelectorAll('#edit-hab-colors .hab-color-btn').forEach(b=>b.classList.toggle('sel',b.dataset.c===editHabColor));}));
+document.getElementById('edit-hab-cancel').addEventListener('click',()=>document.getElementById('edit-hab-modal').classList.remove('open'));
+document.getElementById('edit-hab-modal').addEventListener('click',e=>{if(e.target===document.getElementById('edit-hab-modal'))document.getElementById('edit-hab-modal').classList.remove('open');});
+document.getElementById('edit-hab-save').addEventListener('click',()=>{
+  const nombre=document.getElementById('edit-hab-nombre').value.trim();
+  if(!nombre){toast('Poné un nombre','err');return;}
+  const h=habits.find(x=>x.id===editHabId);
+  if(!h)return;
+  patchH(editHabId,{nombre,emoji:editHabEmoji,color:editHabColor});
+  document.getElementById('edit-hab-modal').classList.remove('open');
+  toast('✓ Hábito actualizado');
+});
+
 function buildHabChart(){const ctx=document.getElementById('chart-hab-line');if(!ctx)return;chHab=dc(chHab);if(!habits.length){document.getElementById('hab-chart-box').style.display='none';return;}document.getElementById('hab-chart-box').style.display='block';const yr=habMonth.getFullYear(),mo=habMonth.getMonth(),today=todayStr(),labels=[],datasets=[];for(let d=1;d<=new Date(yr,mo+1,0).getDate();d++){const ds=yr+'-'+String(mo+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');if(ds>today)break;labels.push(d);}for(const h of habits){const data=labels.map((_,i)=>{const sum=labels.slice(0,i+1).filter((_,j)=>{const d2=yr+'-'+String(mo+1).padStart(2,'0')+'-'+String(labels[j]).padStart(2,'0');return h.completions&&h.completions[d2];}).length;return Math.round(sum/(i+1)*100);});datasets.push({label:h.nombre,data,borderColor:h.color,backgroundColor:h.color+'10',borderWidth:1.5,pointRadius:1,tension:0.4,fill:false});}chHab=new Chart(ctx,{type:'line',data:{labels,datasets},options:{...COPT,plugins:{legend:{display:habits.length<=5,labels:{color:'#ffffff30',font:{size:9},boxWidth:10,padding:6}},tooltip:COPT.plugins.tooltip},scales:{x:{grid:{color:'#ffffff05'},ticks:{color:'#ffffff18',font:{size:9}}},y:{grid:{color:'#ffffff05'},ticks:{color:'#ffffff18',font:{size:9},callback:v=>v+'%'},min:0,max:100}}}});}
 function openEditTx(t){
   document.getElementById('tx-tipo').value=t.tipo;
@@ -772,6 +899,39 @@ function openEditTx(t){
   document.getElementById('tx-modal').dataset.editId=t.id;
   document.getElementById('tx-modal').classList.add('open');
 }
+function renderAhorro(){
+  const total=ahorros.reduce((s,a)=>s+a.monto,0);
+  document.getElementById('ahorro-total').textContent=ars(total);
+  document.getElementById('ahorro-count').textContent=ahorros.length+' movimiento'+(ahorros.length===1?'':'s');
+  const meta=metaAhorro;
+  const pw=document.getElementById('ahorro-progress-wrap');
+  if(meta>0){
+    pw.style.display='block';
+    const pct=Math.min(100,Math.round(total/meta*100));
+    document.getElementById('ahorro-pct').textContent=pct+'%';
+    document.getElementById('ahorro-progress-bar').style.width=pct+'%';
+    document.getElementById('ahorro-meta-display').textContent=ars(meta);
+  }else{
+    pw.style.display='none';
+    document.getElementById('ahorro-meta-display').textContent='Sin meta';
+  }
+  const list=document.getElementById('ahorro-list');list.innerHTML='';
+  if(!ahorros.length){list.innerHTML='<div style="text-align:center;padding:16px;color:#ffffff18;font-size:12px">Sin movimientos todavía</div>';return;}
+  [...ahorros].sort((a,b)=>b.fecha.localeCompare(a.fecha)).forEach(a=>{
+    const item=document.createElement('div');item.className='ahorro-item';
+    const do2=new Date(a.fecha+'T12:00:00');
+    item.innerHTML='<div style="font-size:17px;flex-shrink:0">🏦</div><div style="flex:1"><div class="tx-desc">'+a.desc+'</div><div class="tx-meta">'+do2.getDate()+' '+MESESL[do2.getMonth()]+'</div></div><div class="ahorro-amount">+'+ars(a.monto)+'</div><button style="background:transparent;border:none;color:#ffffff15;cursor:pointer;font-size:12px;padding:2px 4px" class="a-del">✕</button>';
+    item.querySelector('.a-del').addEventListener('click',()=>{delA(a.id);toast('Eliminado');});
+    list.appendChild(item);
+  });
+}
+
+// Meta modal
+document.getElementById('set-meta-btn').addEventListener('click',()=>{document.getElementById('meta-monto').value=metaAhorro||'';document.getElementById('meta-modal').classList.add('open');});
+document.getElementById('meta-cancel').addEventListener('click',()=>document.getElementById('meta-modal').classList.remove('open'));
+document.getElementById('meta-modal').addEventListener('click',e=>{if(e.target===document.getElementById('meta-modal'))document.getElementById('meta-modal').classList.remove('open');});
+document.getElementById('meta-save').addEventListener('click',()=>{const v=parseFloat(document.getElementById('meta-monto').value);if(v>0){metaAhorro=v;localStorage.setItem('midia-meta-ahorro',v);}else{metaAhorro=0;localStorage.removeItem('midia-meta-ahorro');}document.getElementById('meta-modal').classList.remove('open');renderAhorro();toast('✓ Meta guardada');});
+
 function buildFinL(){const ctx=document.getElementById('chart-fin-line');if(!ctx)return;chFinL=dc(chFinL);const now=new Date(),yr=now.getFullYear(),mo=now.getMonth(),labels=[],id=[],gd=[];for(let d=1;d<=now.getDate();d++){const ds=yr+'-'+String(mo+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');labels.push(d);const dt=txs.filter(t=>t.fecha===ds);id.push(dt.filter(t=>t.tipo==='ingreso').reduce((s,t)=>s+t.monto,0));gd.push(dt.filter(t=>t.tipo==='gasto').reduce((s,t)=>s+t.monto,0));}chFinL=new Chart(ctx,{type:'line',data:{labels,datasets:[{label:'Ingresos',data:id,borderColor:'#00e676',backgroundColor:'#00e67610',borderWidth:2,pointRadius:2,tension:0.4,fill:true},{label:'Gastos',data:gd,borderColor:'#ff4d4d',backgroundColor:'#ff4d4d10',borderWidth:2,pointRadius:2,tension:0.4,fill:true}]},options:{...COPT,plugins:{legend:{display:true,labels:{color:'#ffffff30',font:{size:9},boxWidth:10,padding:6}},tooltip:COPT.plugins.tooltip},scales:{x:{grid:{color:'#ffffff05'},ticks:{color:'#ffffff18',font:{size:9}}},y:{grid:{color:'#ffffff05'},ticks:{color:'#ffffff18',font:{size:9}}}}}});}
 function buildFinD(){const ctx=document.getElementById('chart-fin-dona');if(!ctx)return;chFinD=dc(chFinD);const mt2=curMonthTxs().filter(t=>t.tipo==='gasto'),cats={};mt2.forEach(t=>cats[t.cat]=(cats[t.cat]||0)+t.monto);const entries=Object.entries(cats).sort((a,b)=>b[1]-a[1]);if(!entries.length){chFinD=new Chart(ctx,{type:'doughnut',data:{labels:['Sin gastos'],datasets:[{data:[1],backgroundColor:['#ffffff08'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});return;}chFinD=new Chart(ctx,{type:'doughnut',data:{labels:entries.map(e=>e[0]),datasets:[{data:entries.map(e=>e[1]),backgroundColor:entries.map(e=>CC[e[0]]||'#ffffff30'),borderWidth:0,hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:true,position:'right',labels:{color:'#ffffff30',font:{size:8},boxWidth:8,padding:5}},tooltip:{backgroundColor:'#161616',titleColor:'#e8e4dc',bodyColor:'#ffffff50',callbacks:{label:c=>' '+c.label+': '+ars(c.raw)}}}}});}
 
@@ -818,17 +978,19 @@ epicker.addEventListener('click',e=>e.stopPropagation());
 // Habits events
 document.getElementById('hab-prev').addEventListener('click',()=>{habMonth.setMonth(habMonth.getMonth()-1);renderHabits();});
 document.getElementById('hab-next').addEventListener('click',()=>{habMonth.setMonth(habMonth.getMonth()+1);renderHabits();});
-document.getElementById('add-habit-btn').addEventListener('click',()=>{document.getElementById('hab-nombre').value='';selEmoji='⭐';if(etrigger)etrigger.textContent='⭐';selHabColor='#e8e4dc';document.querySelectorAll('.hab-color-btn').forEach(b=>b.classList.toggle('sel',b.dataset.c===selHabColor));document.getElementById('hab-modal').classList.add('open');});
+document.getElementById('add-habit-btn').addEventListener('click',()=>{document.getElementById('hab-nombre').value='';selEmoji='';if(etrigger)etrigger.textContent='+';selHabColor='#e8e4dc';document.querySelectorAll('.hab-color-btn').forEach(b=>b.classList.toggle('sel',b.dataset.c===selHabColor));document.getElementById('hab-modal').classList.add('open');});
 document.getElementById('hab-cancel').addEventListener('click',()=>document.getElementById('hab-modal').classList.remove('open'));
 document.getElementById('hab-modal').addEventListener('click',e=>{if(e.target===document.getElementById('hab-modal'))document.getElementById('hab-modal').classList.remove('open');});
 document.querySelectorAll('.hab-color-btn').forEach(btn=>btn.addEventListener('click',()=>{selHabColor=btn.dataset.c;document.querySelectorAll('.hab-color-btn').forEach(b=>b.classList.toggle('sel',b.dataset.c===selHabColor));}));
-document.getElementById('hab-save').addEventListener('click',()=>{const n=document.getElementById('hab-nombre').value.trim(),e=selEmoji||'⭐';if(!n){toast('Poné un nombre','err');return;}const nh={id:Math.random().toString(36).slice(2)+Date.now().toString(36),nombre:n,emoji:e,color:selHabColor,completions:{}};saveH(nh);document.getElementById('hab-modal').classList.remove('open');toast('✓ Hábito agregado');});
+document.getElementById('hab-save').addEventListener('click',()=>{const n=document.getElementById('hab-nombre').value.trim(),e=selEmoji||'';if(!n){toast('Poné un nombre','err');return;}const nh={id:Math.random().toString(36).slice(2)+Date.now().toString(36),nombre:n,emoji:e,color:selHabColor,completions:{}};saveH(nh);document.getElementById('hab-modal').classList.remove('open');toast('✓ Hábito agregado');});
 
 // Finance events
 document.getElementById('add-tx-btn').addEventListener('click',()=>{document.getElementById('tx-desc').value='';document.getElementById('tx-monto').value='';document.getElementById('tx-fecha').value=todayStr();delete document.getElementById('tx-modal').dataset.editId;document.getElementById('tx-modal').classList.add('open');});
 document.getElementById('tx-cancel').addEventListener('click',()=>document.getElementById('tx-modal').classList.remove('open'));
 document.getElementById('tx-modal').addEventListener('click',e=>{if(e.target===document.getElementById('tx-modal'))document.getElementById('tx-modal').classList.remove('open');});
-document.getElementById('tx-save').addEventListener('click',()=>{const monto=parseFloat(document.getElementById('tx-monto').value);if(!monto||monto<=0){toast('Ingresá un monto','err');return;}const desc=document.getElementById('tx-desc').value.trim(),tipo=document.getElementById('tx-tipo').value,cat=document.getElementById('tx-cat').value,fecha=document.getElementById('tx-fecha').value;const modal=document.getElementById('tx-modal'),editId=modal.dataset.editId;if(editId){const existing=txs.find(x=>x.id===editId);saveT({...existing,tipo,desc:desc||cat,monto,cat,fecha});delete modal.dataset.editId;}else{const nt={id:Math.random().toString(36).slice(2)+Date.now().toString(36),tipo,desc:desc||cat,monto,cat,fecha};saveT(nt);}modal.classList.remove('open');toast('✓ Guardado');});
+document.getElementById('tx-save').addEventListener('click',()=>{const monto=parseFloat(document.getElementById('tx-monto').value);if(!monto||monto<=0){toast('Ingresá un monto','err');return;}const desc=document.getElementById('tx-desc').value.trim(),tipo=document.getElementById('tx-tipo').value,cat=document.getElementById('tx-cat').value,fecha=document.getElementById('tx-fecha').value;const modal=document.getElementById('tx-modal'),editId=modal.dataset.editId;
+  if(tipo==='ahorro'){const na={id:Math.random().toString(36).slice(2)+Date.now().toString(36),desc:desc||'Ahorro',monto,fecha};saveA(na);modal.classList.remove('open');toast('🏦 Guardado en ahorro');return;}
+  if(editId){const existing=txs.find(x=>x.id===editId);saveT({...existing,tipo,desc:desc||cat,monto,cat,fecha});delete modal.dataset.editId;}else{const nt={id:Math.random().toString(36).slice(2)+Date.now().toString(36),tipo,desc:desc||cat,monto,cat,fecha};saveT(nt);}modal.classList.remove('open');toast('✓ Guardado');});
 
 // Init
 setTimeout(initGCal,800);
