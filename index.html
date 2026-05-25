@@ -986,7 +986,16 @@ if(eetrigger&&eepicker){makeEmojiGrid(document.getElementById('edit-emoji-grid')
 document.addEventListener('click',()=>{if(epicker)epicker.style.display='none';if(eepicker)eepicker.style.display='none';});
 
 // ── Edit habit ────────────────────────────────────────────────────────────
-function moveHabit(id,dir){const sorted=[...habits].sort((a,b)=>(a.orden||0)-(b.orden||0));const i=sorted.findIndex(h=>h.id===id),si=i+dir;if(si<0||si>=sorted.length)return;const a=sorted[i],b=sorted[si];patchH(a.id,{orden:b.orden!==undefined?b.orden:si});patchH(b.id,{orden:a.orden!==undefined?a.orden:i});}
+function moveHabit(id,dir){
+  // Assign orden by index if missing
+  const withOrder=habits.map((h,i)=>({...h,orden:h.orden!==undefined?h.orden:i}));
+  const sorted=withOrder.sort((a,b)=>a.orden-b.orden);
+  const i=sorted.findIndex(h=>h.id===id),si=i+dir;
+  if(i===-1||si<0||si>=sorted.length)return;
+  const a=sorted[i],b=sorted[si];
+  patchH(a.id,{orden:b.orden});
+  patchH(b.id,{orden:a.orden});
+}
 function openEditHab(h){
   editHabId=h.id;editHabEmoji=h.emoji||'⭐';editHabColor=h.color||'#e8e4dc';
   document.getElementById('edit-hab-nombre').value=h.nombre;
