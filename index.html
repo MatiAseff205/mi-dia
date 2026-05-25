@@ -807,7 +807,8 @@ function renderHabits(){
   buildHabChart();
   const list=document.getElementById('habit-list');list.innerHTML='';
   if(!habits.length){list.innerHTML='<div style="text-align:center;padding:40px 0;color:#ffffff12"><p style="font-family:Fraunces,serif;font-size:15px">Sin hábitos todavía.</p></div>';return;}
-  for(const h of habits){
+  const sortedH=[...habits].sort((a,b)=>(a.orden||0)-(b.orden||0));
+  for(const h of sortedH){
     let done=0,streak=0,ls=true;for(let d=pd;d>=1;d--){const ds=yr+'-'+String(mo+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');if(h.completions&&h.completions[ds]){done++;if(ls)streak++;}else ls=false;}
     const pct=pd?Math.round(done/pd*100):0;
     const row=document.createElement('div');row.className='habit-row';
@@ -917,7 +918,7 @@ document.getElementById('add-habit-btn').addEventListener('click',()=>{document.
 document.getElementById('hab-cancel').addEventListener('click',()=>document.getElementById('hab-modal').classList.remove('open'));
 document.getElementById('hab-modal').addEventListener('click',e=>{if(e.target===document.getElementById('hab-modal'))document.getElementById('hab-modal').classList.remove('open');});
 document.querySelectorAll('.hab-color-btn').forEach(btn=>btn.addEventListener('click',()=>{selHabColor=btn.dataset.c;document.querySelectorAll('.hab-color-btn').forEach(b=>b.classList.toggle('sel',b.dataset.c===selHabColor));}));
-document.getElementById('hab-save').addEventListener('click',()=>{const n=document.getElementById('hab-nombre').value.trim(),e=document.getElementById('hab-emoji').value.trim()||'⭐';if(!n){toast('Poné un nombre','err');return;}const nh={id:Math.random().toString(36).slice(2)+Date.now().toString(36),nombre:n,emoji:e,color:selHabColor,completions:{}};saveH(nh);document.getElementById('hab-modal').classList.remove('open');toast('✓ Hábito agregado');});
+document.getElementById('hab-save').addEventListener('click',()=>{const n=document.getElementById('hab-nombre').value.trim(),e=document.getElementById('hab-emoji').value.trim()||'⭐';if(!n){toast('Poné un nombre','err');return;}const maxOrd=habits.length?Math.max(...habits.map(h=>h.orden||0)):0;const nh={id:Math.random().toString(36).slice(2)+Date.now().toString(36),nombre:n,emoji:e,color:selHabColor,completions:{},orden:maxOrd+1};saveH(nh);document.getElementById('hab-modal').classList.remove('open');toast('✓ Hábito agregado');});
 
 // Finance events
 document.getElementById('add-tx-btn').addEventListener('click',()=>{document.getElementById('tx-desc').value='';document.getElementById('tx-monto').value='';document.getElementById('tx-fecha').value=todayStr();document.getElementById('tx-modal').classList.add('open');});
