@@ -34,13 +34,13 @@
     .nav-item.active{color:#e8e4dc;border-left-color:#e8e4dc;background:#ffffff08}
     .nav-icon{font-size:14px;flex-shrink:0}
     /* Menu btn */
-    #topbar{position:fixed;top:0;left:0;right:0;height:52px;z-index:9999;display:flex;align-items:center;padding:0 12px;background:linear-gradient(180deg,#080808 60%,transparent);pointer-events:none}
-    #menu-btn{width:44px;height:44px;border-radius:10px;background:#111;border:1px solid #ffffff15;color:#ffffff70;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;-webkit-tap-highlight-color:transparent;flex-shrink:0;pointer-events:all}
+    #topbar{position:fixed;top:0;left:0;right:0;height:60px;z-index:9999;display:flex;align-items:center;padding:0 12px;background:#080808;pointer-events:none}
+    #menu-btn{width:52px;height:52px;border-radius:12px;background:#161616;border:1px solid #ffffff15;color:#ffffff80;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,0);-webkit-user-select:none;user-select:none;flex-shrink:0;pointer-events:all;outline:none}
     #menu-btn:hover{background:#1a1a1a;color:#fff}
     /* Pages */
     .page{display:none}
     .page.active{display:block}
-    .page-content{max-width:580px;margin:0 auto;padding:60px 18px 80px;display:flex;flex-direction:column;gap:16px}
+    .page-content{max-width:580px;margin:0 auto;padding:68px 18px 80px;display:flex;flex-direction:column;gap:16px}
     /* Shared */
     .eyebrow{font-size:11px;color:#ffffff25;letter-spacing:3px;text-transform:uppercase;margin-bottom:6px}
     .pg-title{font-family:'Fraunces',serif;font-size:36px;font-weight:300;letter-spacing:-1px;line-height:1}
@@ -843,10 +843,37 @@ document.querySelectorAll('.hab-color-btn').forEach(btn=>btn.addEventListener('c
 document.getElementById('hab-save').addEventListener('click',()=>{const n=document.getElementById('hab-nombre').value.trim(),e=selEmoji||'⭐';if(!n){toast('Poné un nombre','err');return;}const maxOrd=habits.length?Math.max(...habits.map(h=>h.orden||0)):0;const nh={id:Math.random().toString(36).slice(2)+Date.now().toString(36),nombre:n,emoji:e,color:selHabColor,completions:{},orden:maxOrd+1};saveH(nh);document.getElementById('hab-modal').classList.remove('open');toast('✓ Hábito agregado');});
 
 // Finance events
-document.getElementById('add-tx-btn').addEventListener('click',()=>{document.getElementById('tx-desc').value='';document.getElementById('tx-monto').value='';document.getElementById('tx-fecha').value=todayStr();document.getElementById('tx-modal').classList.add('open');});
+document.getElementById('add-tx-btn').addEventListener('click',()=>{
+  delete document.getElementById('tx-modal').dataset.editId;
+  document.getElementById('tx-desc').value='';
+  document.getElementById('tx-monto').value='';
+  document.getElementById('tx-fecha').value=todayStr();
+  document.getElementById('tx-modal').classList.add('open');
+});
 document.getElementById('tx-cancel').addEventListener('click',()=>document.getElementById('tx-modal').classList.remove('open'));
 document.getElementById('tx-modal').addEventListener('click',e=>{if(e.target===document.getElementById('tx-modal'))document.getElementById('tx-modal').classList.remove('open');});
-document.getElementById('tx-save').addEventListener('click',()=>{const monto=parseFloat(document.getElementById('tx-monto').value);if(!monto||monto<=0){toast('Ingresá un monto','err');return;}const desc=document.getElementById('tx-desc').value.trim(),tipo=document.getElementById('tx-tipo').value,cat=document.getElementById('tx-cat').value,fecha=document.getElementById('tx-fecha').value;txs.push({id:Math.random().toString(36).slice(2)+Date.now().toString(36),tipo,desc:desc||cat,monto,cat,fecha});saveT();document.getElementById('tx-modal').classList.remove('open');renderFin();renderDash();toast('✓ Transacción guardada');});
+document.getElementById('tx-save').addEventListener('click',()=>{
+  const monto=parseFloat(document.getElementById('tx-monto').value);
+  if(!monto||monto<=0){toast('Ingresá un monto','err');return;}
+  const desc=document.getElementById('tx-desc').value.trim(),
+        tipo=document.getElementById('tx-tipo').value,
+        cat=document.getElementById('tx-cat').value,
+        fecha=document.getElementById('tx-fecha').value;
+  const modal=document.getElementById('tx-modal');
+  const editId=modal.dataset.editId;
+  if(tipo==='ahorro'){
+    saveA({id:Math.random().toString(36).slice(2)+Date.now().toString(36),desc:desc||'Ahorro',monto,fecha});
+    modal.classList.remove('open');toast('🏦 Guardado en ahorro');return;
+  }
+  if(editId){
+    const ex=txs.find(x=>x.id===editId);
+    if(ex)saveT({...ex,tipo,desc:desc||cat,monto,cat,fecha});
+    delete modal.dataset.editId;
+  } else {
+    saveT({id:Math.random().toString(36).slice(2)+Date.now().toString(36),tipo,desc:desc||cat,monto,cat,fecha});
+  }
+  modal.classList.remove('open');toast('✓ Guardado');
+});
 
 
 // ── Charts ────────────────────────────────────────────────────────────────
