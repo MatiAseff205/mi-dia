@@ -34,12 +34,13 @@
     .nav-item.active{color:#e8e4dc;border-left-color:#e8e4dc;background:#ffffff08}
     .nav-icon{font-size:14px;flex-shrink:0}
     /* Menu btn */
-    #menu-btn,.menu-btn-page{width:52px;height:52px;border-radius:12px;background:#161616;border:1px solid #ffffff15;color:#ffffff80;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,0);-webkit-user-select:none;user-select:none;outline:none;flex-shrink:0}
+    #topbar{position:fixed;top:0;left:0;right:0;height:56px;z-index:9999;display:flex;align-items:center;padding:0 12px;background:#080808;pointer-events:none}
+    #menu-btn{width:52px;height:52px;border-radius:12px;background:#161616;border:1px solid #ffffff15;color:#ffffff80;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,0);-webkit-user-select:none;user-select:none;outline:none;flex-shrink:0;pointer-events:all}
     #menu-btn:hover{background:#1a1a1a;color:#fff}
     /* Pages */
     .page{display:none}
     .page.active{display:block}
-    .page-content{max-width:580px;margin:0 auto;padding:16px 18px 80px;display:flex;flex-direction:column;gap:16px}
+    .page-content{max-width:580px;margin:0 auto;padding:68px 18px 80px;display:flex;flex-direction:column;gap:16px}
     /* Shared */
     .eyebrow{font-size:11px;color:#ffffff25;letter-spacing:3px;text-transform:uppercase;margin-bottom:6px}
     .pg-title{font-family:'Fraunces',serif;font-size:36px;font-weight:300;letter-spacing:-1px;line-height:1}
@@ -254,6 +255,7 @@
 </head>
 <body>
 
+<div id="topbar"><button id="menu-btn">☰</button></div>
 <div id="sidebar-overlay"></div>
 <div id="sidebar">
   <div id="sidebar-logo">Mi Día<span> _</span></div>
@@ -266,7 +268,7 @@
 <!-- DASHBOARD -->
 <div id="page-dashboard" class="page active">
 <div class="page-content">
-  <div style="display:flex;align-items:center;gap:14px"><button id="menu-btn" onclick="toggleSidebar()">☰</button><div><div class="eyebrow" id="dash-eyebrow"></div><div class="pg-title">Dashboard<span> _</span></div></div></div>
+  <div style="padding-left:56px"><div class="eyebrow" id="dash-eyebrow"></div><div class="pg-title">Dashboard<span> _</span></div></div>
   <div class="dash-grid" id="dash-cards"></div>
   <div id="dash-layout">
     <div id="dash-left">
@@ -285,7 +287,7 @@
 <div id="page-agenda" class="page">
 <div class="page-content">
   <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-    <div style="display:flex;align-items:center;gap:14px"><button class="menu-btn-page" onclick="toggleSidebar()">☰</button><div><div class="eyebrow" id="date-label"></div><div class="pg-title">Mi Día<span> _</span><span id="sync-dot"></span></div></div></div>
+    <div><div class="eyebrow" id="date-label"></div><div class="pg-title">Mi Día<span> _</span><span id="sync-dot"></span></div></div>
     <div id="prog-box" style="display:none"><div id="pct">0%</div><div id="pct-label">0/0</div></div>
   </div>
   <div id="prog-bar-wrap" style="display:none"><div id="prog-bar"></div></div>
@@ -327,7 +329,7 @@
 <!-- HABITOS -->
 <div id="page-habitos" class="page">
 <div class="page-content">
-  <div style="display:flex;align-items:center;gap:14px"><button class="menu-btn-page" onclick="toggleSidebar()">☰</button><div><div class="eyebrow" id="hab-eyebrow"></div><div class="pg-title">Hábitos<span> _</span></div></div></div>
+  <div style="padding-left:56px"><div class="eyebrow" id="hab-eyebrow"></div><div class="pg-title">Hábitos<span> _</span></div></div>
   <div id="hab-top">
     <div id="hab-top-left">
       <div class="hab-stats-row" id="hab-stats"></div>
@@ -352,7 +354,7 @@
 <!-- FINANZAS -->
 <div id="page-finanzas" class="page">
 <div class="page-content">
-  <div style="display:flex;align-items:center;gap:14px"><button class="menu-btn-page" onclick="toggleSidebar()">☰</button><div><div class="eyebrow">Control financiero personal</div><div class="pg-title">Finanzas<span> _</span></div></div></div>
+  <div style="padding-left:56px"><div class="eyebrow">Control financiero personal</div><div class="pg-title">Finanzas<span> _</span></div></div>
   <!-- Top: line 3/4 + dona 1/4 -->
   <div id="fin-top">
     <div class="chart-box" style="margin:0"><div class="chart-label">Ingresos vs Gastos</div><div style="position:relative;height:220px"><canvas id="chart-fin-line"></canvas></div></div>
@@ -804,9 +806,7 @@ function buildFinL(){const ctx=document.getElementById('chart-fin-line');if(!ctx
 function buildFinD(){const ctx=document.getElementById('chart-fin-dona');if(!ctx)return;chFinD=dc(chFinD);const mt2=curMonthTxs().filter(t=>t.tipo==='gasto'),cats={};mt2.forEach(t=>cats[t.cat]=(cats[t.cat]||0)+t.monto);const entries=Object.entries(cats).sort((a,b)=>b[1]-a[1]);if(!entries.length){chFinD=new Chart(ctx,{type:'doughnut',data:{labels:['Sin gastos'],datasets:[{data:[1],backgroundColor:['#ffffff08'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});return;}chFinD=new Chart(ctx,{type:'doughnut',data:{labels:entries.map(e=>e[0]),datasets:[{data:entries.map(e=>e[1]),backgroundColor:entries.map(e=>CC[e[0]]||'#ffffff30'),borderWidth:0,hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:true,position:'right',labels:{color:'#ffffff30',font:{size:8},boxWidth:8,padding:5}},tooltip:{backgroundColor:'#161616',titleColor:'#e8e4dc',bodyColor:'#ffffff50',callbacks:{label:c=>' '+c.label+': '+ars(c.raw)}}}}});}
 
 // Nav
-window.toggleSidebar=function(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebar-overlay').classList.toggle('open');};
 document.getElementById('menu-btn').addEventListener('click',()=>{document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebar-overlay').classList.toggle('open');});
-document.querySelectorAll('.menu-btn-page').forEach(b=>b.addEventListener('click',()=>window.toggleSidebar()));
 document.getElementById('sidebar-overlay').addEventListener('click',()=>{document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');});
 document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('click',()=>{const page=item.dataset.page;document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));item.classList.add('active');document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+page).classList.add('active');document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');if(page==='habitos'){renderHabits();setTimeout(buildHabChart,100);}if(page==='finanzas'){renderFin();setTimeout(()=>{buildFinL();buildFinD();renderAhorro();},100);}if(page==='dashboard'){renderDash();setTimeout(buildDashChart,100);}});});
 
