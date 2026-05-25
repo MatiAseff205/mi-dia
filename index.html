@@ -237,6 +237,51 @@
       .page-content{padding:54px 48px 60px;max-width:1400px}
     }
 
+
+    /* Bottom nav - mobile only */
+    #bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 60px;
+      background: #0a0a0a;
+      border-top: 1px solid #ffffff10;
+      z-index: 9999;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    #bottom-nav-inner {
+      display: flex;
+      height: 60px;
+      align-items: stretch;
+    }
+    .bnav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      cursor: pointer;
+      color: #ffffff30;
+      font-size: 9px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-family: 'Space Mono', monospace;
+      border: none;
+      background: transparent;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      padding: 0;
+      transition: color .15s;
+    }
+    .bnav-item.active { color: #e8e4dc; }
+    .bnav-item .bnav-icon { font-size: 20px; line-height: 1; }
+    @media (max-width: 767px) {
+      #bottom-nav { display: block; }
+      #menu-btn { display: none; }
+      .page-content { padding-bottom: 80px; }
+    }
+
     /* Toast */
     #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#161616;border:1px solid #ffffff12;border-radius:11px;padding:11px 18px;font-size:12px;color:#e8e4dc;display:none;z-index:999;white-space:nowrap;animation:fadeIn .3s}
     #toast.ok{border-color:#00b89435;color:#00b894}
@@ -505,6 +550,27 @@
       <button class="btn-cancel" id="meta-cancel">Cancelar</button>
       <button class="btn-save" id="meta-save" style="background:#ffb844;color:#080808">Guardar</button>
     </div>
+  </div>
+</div>
+
+<div id="bottom-nav">
+  <div id="bottom-nav-inner">
+    <button class="bnav-item active" data-page="dashboard">
+      <span class="bnav-icon">⬡</span>
+      <span>Inicio</span>
+    </button>
+    <button class="bnav-item" data-page="agenda">
+      <span class="bnav-icon">📅</span>
+      <span>Agenda</span>
+    </button>
+    <button class="bnav-item" data-page="habitos">
+      <span class="bnav-icon">✦</span>
+      <span>Hábitos</span>
+    </button>
+    <button class="bnav-item" data-page="finanzas">
+      <span class="bnav-icon">$</span>
+      <span>Finanzas</span>
+    </button>
   </div>
 </div>
 
@@ -796,9 +862,30 @@ function renderDash(){
 
 
 // Nav
+// Bottom nav
+document.querySelectorAll('.bnav-item').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const page = btn.dataset.page;
+    // Update bottom nav active state
+    document.querySelectorAll('.bnav-item').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    // Update sidebar nav active state
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    const sidebarItem = document.querySelector(`.nav-item[data-page="${page}"]`);
+    if (sidebarItem) sidebarItem.classList.add('active');
+    // Switch page
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    // Trigger renders
+    if(page==='habitos'){renderHabits();setTimeout(buildHabChart,100);}
+    if(page==='finanzas'){renderFin();setTimeout(()=>{buildFinL();buildFinD();renderAhorro();},100);}
+    if(page==='dashboard'){renderDash();setTimeout(buildDashChart,100);}
+  });
+});
+
 document.getElementById('menu-btn').addEventListener('click',()=>{document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebar-overlay').classList.toggle('open');});
 document.getElementById('sidebar-overlay').addEventListener('click',()=>{document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');});
-document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('click',()=>{const page=item.dataset.page;document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));item.classList.add('active');document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+page).classList.add('active');document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');if(page==='habitos'){renderHabits();}if(page==='finanzas'){renderFin();setTimeout(()=>{buildFinL();buildFinD();renderAhorro();},50);}if(page==='dashboard'){renderDash();}});});
+document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('click',()=>{const page=item.dataset.page;document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));item.classList.add('active');document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+page).classList.add('active');document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');document.querySelectorAll('.bnav-item').forEach(b=>b.classList.toggle('active',b.dataset.page===page));if(page==='habitos'){renderHabits();}if(page==='finanzas'){renderFin();setTimeout(()=>{buildFinL();buildFinD();renderAhorro();},50);}if(page==='dashboard'){renderDash();}});});
 
 // Agenda events
 document.getElementById('cal-prev').addEventListener('click',()=>{calMonth.setMonth(calMonth.getMonth()-1);buildCal();});
