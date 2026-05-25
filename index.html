@@ -21,7 +21,7 @@
     @keyframes slideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
     @keyframes fadeIn{from{opacity:0}to{opacity:1}}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-    body{font-family:'Space Mono',monospace;color:#e8e4dc;min-height:100vh;background:linear-gradient(160deg,#111 0%,#080808 40%,#050505 100%);-webkit-tap-highlight-color:transparent}
+    body{font-family:'Space Mono',monospace;color:#e8e4dc;min-height:100vh;background:linear-gradient(160deg,#111 0%,#080808 40%,#050505 100%)}
     /* Sidebar */
     #sidebar{position:fixed;left:0;top:0;bottom:0;width:210px;background:#060606;border-right:1px solid #ffffff08;display:flex;flex-direction:column;padding:28px 0 24px;z-index:50;transform:translateX(-100%);transition:transform .28s ease;overflow-y:auto}
     #sidebar.open{transform:translateX(0);box-shadow:4px 0 32px #00000080}
@@ -34,13 +34,12 @@
     .nav-item.active{color:#e8e4dc;border-left-color:#e8e4dc;background:#ffffff08}
     .nav-icon{font-size:14px;flex-shrink:0}
     /* Menu btn */
-    #topbar{position:fixed;top:0;left:0;right:0;height:56px;z-index:9999;display:flex;align-items:center;padding:0 12px;background:#080808;pointer-events:none}
-    #menu-btn{width:52px;height:52px;border-radius:12px;background:#161616;border:1px solid #ffffff15;color:#ffffff80;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,0);-webkit-user-select:none;user-select:none;outline:none;flex-shrink:0;pointer-events:all}
+    #menu-btn{position:fixed;top:14px;left:14px;z-index:60;width:36px;height:36px;border-radius:10px;background:#111;border:1px solid #ffffff10;color:#ffffff50;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center}
     #menu-btn:hover{background:#1a1a1a;color:#fff}
     /* Pages */
     .page{display:none}
     .page.active{display:block}
-    .page-content{max-width:580px;margin:0 auto;padding:68px 18px 80px;display:flex;flex-direction:column;gap:16px}
+    .page-content{max-width:580px;margin:0 auto;padding:54px 18px 80px;display:flex;flex-direction:column;gap:16px}
     /* Shared */
     .eyebrow{font-size:11px;color:#ffffff25;letter-spacing:3px;text-transform:uppercase;margin-bottom:6px}
     .pg-title{font-family:'Fraunces',serif;font-size:36px;font-weight:300;letter-spacing:-1px;line-height:1}
@@ -83,15 +82,14 @@
     .day-btn .dname{font-size:9px;text-transform:uppercase;letter-spacing:1px}
     .day-btn .dnum{font-size:15px;font-weight:700;margin-top:2px}
     .day-btn .dmes{font-size:9px;color:#ffffff20;margin-top:1px}
-    .day-btn.active{background:#e8e4dc;border-color:#e8e4dc;color:#080808 !important}
-    .day-btn.active *{color:#080808 !important}
-    .day-btn.active .dmes{color:#08080850 !important}
+    .day-btn.active{background:#e8e4dc;border-color:#e8e4dc;color:#080808}
+    .day-btn.active .dmes{color:#08080850}
     .day-btn.has-tasks{border-color:#ffffff20;color:#ffffff55}
-    .day-btn.today:not(.active) .dnum{color:#e8e4dc}
-    #gcal-bar{background:#0e0e0e;border:1px solid #ffffff08;border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .day-btn.today .dnum{color:#e8e4dc}
+    #gcal-bar{background:#0e0e0e;border:1px solid #ffffff08;border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:12px}
     .gcal-title{font-size:10px;color:#ffffff25;letter-spacing:2px;text-transform:uppercase}
     #gcal-status{font-size:12px;color:#00b894;margin-top:2px;font-family:'Fraunces',serif}
-    #gcal-btns{display:flex;gap:6px;flex-wrap:wrap}
+    #gcal-btns{display:flex;gap:6px;flex-shrink:0}
     #gcal-connect{background:linear-gradient(135deg,#4285f4,#34a853);border:none;border-radius:9px;color:#fff;font-family:'Space Mono',monospace;font-size:11px;padding:7px 13px;cursor:pointer}
     #gcal-sync-all{display:none;background:#ffffff08;border:1px solid #ffffff12;border-radius:9px;color:#ffffff40;font-family:'Space Mono',monospace;font-size:10px;padding:6px 10px;cursor:pointer}
     #ia-bubble{background:#0e0e0e;border:1px solid #ffffff08;border-radius:14px;padding:14px 18px;display:flex;gap:12px;align-items:flex-start}
@@ -218,33 +216,24 @@
     .dash-hab-check{width:17px;height:17px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:8px;flex-shrink:0}
     .dash-hab-name{font-size:12px;color:#ffffff40;font-family:'Fraunces',serif}
 
-    /* Emoji picker */
-    .emoji-picker-wrap { position:relative; display:inline-block; }
-    .emoji-trigger { width:44px;height:38px;border-radius:9px;border:1px solid #ffffff10;background:#ffffff08;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center; }
-    .emoji-dropdown { display:none;position:absolute;top:44px;left:0;background:#161616;border:1px solid #ffffff12;border-radius:12px;padding:10px;z-index:999;width:230px;box-shadow:0 8px 24px #000000b0; }
-    .emoji-dropdown.open { display:block; }
-    .emoji-grid { display:flex;flex-wrap:wrap;gap:3px; }
-    .emoji-grid button { background:transparent;border:none;font-size:20px;cursor:pointer;padding:4px;border-radius:6px;transition:background .15s; }
-    .emoji-grid button:hover { background:#ffffff12; }
+    /* ── Mobile base ── */
+    #hab-top,#fin-top,#fin-bottom,#dash-layout,#agenda-layout{display:flex;flex-direction:column;gap:16px}
+    #fin-cards-top{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    #fin-cards-col,#fin-tx-col,#hab-top-left,#hab-top-right,#dash-left,#dash-right,#agenda-left,#agenda-right{display:flex;flex-direction:column;gap:14px}
 
-    /* Mobile base — all columns stack */
-    #hab-top,#fin-top,#fin-bottom,#dash-layout,#agenda-layout { display:flex;flex-direction:column;gap:16px; }
-    #fin-cards-top { display:grid;grid-template-columns:1fr 1fr;gap:10px; }
-    #fin-cards-col,#fin-tx-col,#hab-top-left,#hab-top-right,#dash-left,#dash-right,#agenda-left,#agenda-right { display:flex;flex-direction:column;gap:14px; }
-
-    /* Desktop overrides */
+    /* ── Desktop overrides ── */
     @media(min-width:768px){
-      .page-content { max-width:100%;padding:54px 32px 60px; }
-      #agenda-layout { display:grid;grid-template-columns:300px 1fr;gap:24px;align-items:start; }
-      #agenda-left { position:sticky;top:54px; }
-      #dash-layout { display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start; }
-      #hab-top { display:grid;grid-template-columns:1fr 3fr;gap:20px;align-items:start; }
-      #fin-top { display:grid;grid-template-columns:3fr 1fr;gap:20px;align-items:start; }
-      #fin-bottom { display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start; }
-      .habit-day { width:30px;height:30px;font-size:10px; }
+      .page-content{max-width:100%;padding:54px 32px 60px}
+      #agenda-layout{display:grid;grid-template-columns:300px 1fr;gap:24px;align-items:start}
+      #agenda-left{position:sticky;top:54px}
+      #dash-layout{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+      #hab-top{display:grid;grid-template-columns:1fr 3fr;gap:20px;align-items:start}
+      #fin-top{display:grid;grid-template-columns:3fr 1fr;gap:20px;align-items:start}
+      #fin-bottom{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+      .habit-day{width:30px;height:30px;font-size:10px}
     }
     @media(min-width:1100px){
-      .page-content { padding:54px 48px 60px;max-width:1400px; }
+      .page-content{padding:54px 48px 60px;max-width:1400px}
     }
 
     /* Toast */
@@ -254,8 +243,7 @@
   </style>
 </head>
 <body>
-
-<div id="topbar"><button id="menu-btn">☰</button></div>
+<button id="menu-btn">☰</button>
 <div id="sidebar-overlay"></div>
 <div id="sidebar">
   <div id="sidebar-logo">Mi Día<span> _</span></div>
@@ -268,7 +256,7 @@
 <!-- DASHBOARD -->
 <div id="page-dashboard" class="page active">
 <div class="page-content">
-  <div style="padding-left:56px"><div class="eyebrow" id="dash-eyebrow"></div><div class="pg-title">Dashboard<span> _</span></div></div>
+  <div style="padding-left:48px"><div class="eyebrow" id="dash-eyebrow"></div><div class="pg-title">Dashboard<span> _</span></div></div>
   <div class="dash-grid" id="dash-cards"></div>
   <div id="dash-layout">
     <div id="dash-left">
@@ -277,7 +265,7 @@
       <div><div class="dash-sec-title">Finanzas del mes</div><div class="dash-grid" id="dash-fin"></div></div>
     </div>
     <div id="dash-right">
-      <div class="chart-box"><div class="chart-label">Hábitos — progreso diario</div><div style="position:relative;height:220px"><canvas id="chart-dash-hab"></canvas></div></div>
+      <div class="chart-box"><div class="chart-label">Hábitos — progreso diario</div><div style="position:relative;height:200px"><canvas id="chart-dash-hab"></canvas></div></div>
     </div>
   </div>
 </div>
@@ -286,7 +274,7 @@
 <!-- AGENDA -->
 <div id="page-agenda" class="page">
 <div class="page-content">
-  <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-left:48px">
     <div><div class="eyebrow" id="date-label"></div><div class="pg-title">Mi Día<span> _</span><span id="sync-dot"></span></div></div>
     <div id="prog-box" style="display:none"><div id="pct">0%</div><div id="pct-label">0/0</div></div>
   </div>
@@ -329,7 +317,7 @@
 <!-- HABITOS -->
 <div id="page-habitos" class="page">
 <div class="page-content">
-  <div style="padding-left:56px"><div class="eyebrow" id="hab-eyebrow"></div><div class="pg-title">Hábitos<span> _</span></div></div>
+  <div style="padding-left:48px"><div class="eyebrow" id="hab-eyebrow"></div><div class="pg-title">Hábitos<span> _</span></div></div>
   <div id="hab-top">
     <div id="hab-top-left">
       <div class="hab-stats-row" id="hab-stats"></div>
@@ -342,7 +330,7 @@
     <div id="hab-top-right">
       <div class="chart-box" id="hab-chart-box" style="display:none">
         <div class="chart-label">Progreso diario del mes</div>
-        <div style="position:relative;height:220px"><canvas id="chart-hab-line"></canvas></div>
+        <div style="position:relative;height:200px"><canvas id="chart-hab-line"></canvas></div>
       </div>
     </div>
   </div>
@@ -354,13 +342,11 @@
 <!-- FINANZAS -->
 <div id="page-finanzas" class="page">
 <div class="page-content">
-  <div style="padding-left:56px"><div class="eyebrow">Control financiero personal</div><div class="pg-title">Finanzas<span> _</span></div></div>
-  <!-- Top: line 3/4 + dona 1/4 -->
+  <div style="padding-left:48px"><div class="eyebrow">Control financiero personal</div><div class="pg-title">Finanzas<span> _</span></div></div>
   <div id="fin-top">
-    <div class="chart-box" style="margin:0"><div class="chart-label">Ingresos vs Gastos</div><div style="position:relative;height:220px"><canvas id="chart-fin-line"></canvas></div></div>
-    <div class="chart-box" style="margin:0"><div class="chart-label">Por categoría</div><div style="position:relative;height:220px"><canvas id="chart-fin-dona"></canvas></div></div>
+    <div class="chart-box" style="margin:0"><div class="chart-label">Ingresos vs Gastos</div><div style="position:relative;height:200px"><canvas id="chart-fin-line"></canvas></div></div>
+    <div class="chart-box" style="margin:0"><div class="chart-label">Por categoría</div><div style="position:relative;height:200px"><canvas id="chart-fin-dona"></canvas></div></div>
   </div>
-  <!-- Bottom: cards+categories left, tx right -->
   <div id="fin-bottom">
     <div id="fin-cards-col">
       <div id="fin-cards-top">
@@ -373,32 +359,33 @@
     <div id="fin-tx-col">
       <button id="add-tx-btn">+ Nueva transacción</button>
       <div><div class="cat-sec-label">Transacciones recientes</div><div class="tx-list" id="tx-list"></div></div>
-    </div><!-- /fin-tx-col -->
-  </div><!-- /fin-bottom -->
-  <!-- Ahorro -->
-  <div class="card" style="border-color:#ffb84425;margin-top:4px">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
-      <div>
-        <div class="card-label" style="color:#ffb844">🏦 Ahorro acumulado</div>
-        <div style="font-family:'Fraunces',serif;font-size:32px;font-weight:300;color:#ffb844" id="ahorro-total">$0</div>
-        <div style="font-size:10px;color:#ffffff25;margin-top:2px" id="ahorro-count"></div>
-      </div>
-      <div style="text-align:right">
-        <div style="font-size:10px;color:#ffffff25;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px">Meta mensual</div>
-        <div style="font-family:'Fraunces',serif;font-size:16px;color:#ffffff35" id="ahorro-meta-display">Sin meta</div>
-        <button id="set-meta-btn" style="margin-top:5px;background:transparent;border:1px solid #ffb84430;border-radius:8px;color:#ffb84460;font-family:'Space Mono',monospace;font-size:10px;padding:4px 10px;cursor:pointer">Definir meta</button>
+      <div id="fin-ahorro-section">
+        <div class="chart-box" style="border-color:#ffb84420;margin:0">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div>
+              <div class="chart-label" style="color:#ffb844;margin-bottom:4px">🏦 Ahorro</div>
+              <div style="font-family:'Fraunces',serif;font-size:28px;font-weight:300;color:#ffb844" id="ahorro-total">$0</div>
+              <div style="font-size:10px;color:#ffffff25;margin-top:2px" id="ahorro-count"></div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:10px;color:#ffffff25;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px">Meta mensual</div>
+              <div style="font-family:'Fraunces',serif;font-size:16px;color:#ffffff40" id="ahorro-meta-display">Sin meta</div>
+              <button id="set-meta-btn" style="margin-top:5px;background:transparent;border:1px solid #ffb84430;border-radius:8px;color:#ffb84470;font-family:'Space Mono',monospace;font-size:10px;padding:4px 10px;cursor:pointer">Definir meta</button>
+            </div>
+          </div>
+          <div id="ahorro-progress-wrap" style="display:none;margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+              <span style="font-size:10px;color:#ffffff25">Progreso</span>
+              <span style="font-size:10px;color:#ffb844" id="ahorro-pct">0%</span>
+            </div>
+            <div style="height:4px;background:#ffffff08;border-radius:2px;overflow:hidden">
+              <div id="ahorro-progress-bar" style="height:100%;background:#ffb844;border-radius:2px;transition:width .5s;width:0%"></div>
+            </div>
+          </div>
+          <div class="tx-list" id="ahorro-list"></div>
+        </div>
       </div>
     </div>
-    <div id="ahorro-progress-wrap" style="display:none;margin-bottom:12px">
-      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-        <span style="font-size:10px;color:#ffffff25">Progreso</span>
-        <span style="font-size:10px;color:#ffb844" id="ahorro-pct">0%</span>
-      </div>
-      <div style="height:4px;background:#ffffff08;border-radius:2px;overflow:hidden">
-        <div id="ahorro-progress-bar" style="height:100%;background:#ffb844;border-radius:2px;width:0%;transition:width .5s"></div>
-      </div>
-    </div>
-    <div id="ahorro-list"></div>
   </div>
 </div>
 </div>
@@ -440,14 +427,7 @@
   <div class="modal-box">
     <h2>Nuevo hábito</h2>
     <div class="field"><label>Nombre</label><input type="text" id="hab-nombre" placeholder="Ej: Leer 30 min" /></div>
-    <div class="field"><label>Emoji</label>
-      <div class="emoji-picker-wrap">
-        <button class="emoji-trigger" id="emoji-trigger" type="button">⭐</button>
-        <div class="emoji-dropdown" id="emoji-dropdown">
-          <div class="emoji-grid" id="emoji-grid"></div>
-        </div>
-      </div>
-    </div>
+    <div class="field"><label>Emoji</label><input type="text" id="hab-emoji" placeholder="📚" maxlength="2" style="width:70px" /></div>
     <div class="field"><label>Color</label>
       <div class="hab-color-btns">
         <button class="hab-color-btn sel" data-c="#e8e4dc" style="background:#e8e4dc"></button>
@@ -491,11 +471,9 @@
     <h2>Editar hábito</h2>
     <div class="field"><label>Nombre</label><input type="text" id="edit-hab-nombre" /></div>
     <div class="field"><label>Emoji</label>
-      <div class="emoji-picker-wrap">
-        <button class="emoji-trigger" id="edit-emoji-trigger" type="button">⭐</button>
-        <div class="emoji-dropdown" id="edit-emoji-dropdown">
-          <div class="emoji-grid" id="edit-emoji-grid"></div>
-        </div>
+      <button id="edit-emoji-trigger" style="width:48px;height:38px;border-radius:9px;border:1px solid #ffffff10;background:#ffffff08;font-size:20px;cursor:pointer">⭐</button>
+      <div id="edit-emoji-picker" style="display:none;position:fixed;background:#161616;border:1px solid #ffffff12;border-radius:12px;padding:10px;z-index:99999;width:220px;box-shadow:0 8px 24px #000000a0">
+        <div style="display:flex;flex-wrap:wrap;gap:4px" id="edit-emoji-grid"></div>
       </div>
     </div>
     <div class="field"><label>Color</label>
@@ -589,11 +567,24 @@ onSnapshot(COL,snap=>{
   sync('ok');
   document.getElementById('ia-text').textContent='¡Hola! Contame qué tenés para hoy 📋';
   document.getElementById('send-btn').disabled=!document.getElementById('input').value.trim();
-  buildCal();buildWeek();renderTasks();updateHdr();renderDash();
-},()=>{sync('offline');document.getElementById('ia-text').textContent='Sin conexión 📡';});
-onSnapshot(HCOL,snap=>{habits=snap.docs.map(d=>({id:d.id,...d.data()}));if(document.getElementById('page-habitos').classList.contains('active'))renderHabits();renderDash();},()=>{});
-onSnapshot(TCOL,snap=>{txs=snap.docs.map(d=>({id:d.id,...d.data()}));if(document.getElementById('page-finanzas').classList.contains('active'))renderFin();renderDash();},()=>{});
-onSnapshot(ACOL,snap=>{ahorros=snap.docs.map(d=>({id:d.id,...d.data()}));if(document.getElementById('page-finanzas').classList.contains('active'))renderAhorro();},()=>{});
+  buildCal();buildWeek();renderTasks();updateHdr();renderDash();},()=>{sync('offline');document.getElementById('ia-text').textContent='Sin conexión 📡';});
+
+onSnapshot(HCOL,snap=>{
+  habits=snap.docs.map(d=>({id:d.id,...d.data()}));
+  if(document.getElementById('page-habitos').classList.contains('active'))renderHabits();
+  renderDash();
+},()=>{});
+
+onSnapshot(TCOL,snap=>{
+  txs=snap.docs.map(d=>({id:d.id,...d.data()}));
+  if(document.getElementById('page-finanzas').classList.contains('active'))renderFin();
+  renderDash();
+},()=>{});
+
+onSnapshot(ACOL,snap=>{
+  ahorros=snap.docs.map(d=>({id:d.id,...d.data()}));
+  if(document.getElementById('page-finanzas').classList.contains('active'))renderAhorro();
+},()=>{});
 
 async function saveTask(t){sync('syncing');await setDoc(doc(db,'tareas',t.id),t);sync('ok');if(gcalUser&&gcalToken)gSync(t,t.fecha||selDate).catch(()=>{});}
 async function delTask(id){sync('syncing');await deleteDoc(doc(db,'tareas',id));sync('ok');const t=allTareas.find(x=>x.id===id);if(t&&gcalUser&&gcalToken&&t.gcalEventId){for(const e of Object.values(t.gcalEventId)){try{await gReq('DELETE','/calendars/primary/events/'+e);}catch(e){}}};}
@@ -744,23 +735,21 @@ function renderHabits(){
   const now=new Date(),pd=mo<now.getMonth()||yr<now.getFullYear()?dim:now.getDate();
   const dt=habits.filter(h=>h.completions&&h.completions[today]).length;
   const avg=habits.length?Math.round(habits.reduce((s,h)=>{let d=0;for(let i=1;i<=pd;i++){const ds=yr+'-'+String(mo+1).padStart(2,'0')+'-'+String(i).padStart(2,'0');if(h.completions&&h.completions[ds])d++;}return s+d/pd*100;},0)/habits.length):0;
+  setTimeout(buildHabChart,50);
   document.getElementById('hab-eyebrow').textContent='hoy · '+DIASL[now.getDay()]+', '+now.getDate()+' de '+MESESL[now.getMonth()];
   document.getElementById('hab-stats').innerHTML='<div class="hab-stat"><div class="hab-stat-label">Hoy</div><div class="hab-stat-val">'+dt+'/'+habits.length+'</div></div><div class="hab-stat"><div class="hab-stat-label">Este mes</div><div class="hab-stat-val">'+avg+'%</div></div>';
   buildHabChart();
   const list=document.getElementById('habit-list');list.innerHTML='';
-  const sortedHabits=[...habits].sort((a,b)=>(a.orden||0)-(b.orden||0));
   if(!habits.length){list.innerHTML='<div style="text-align:center;padding:40px 0;color:#ffffff12"><p style="font-family:Fraunces,serif;font-size:15px">Sin hábitos todavía.</p></div>';return;}
-  for(const h of sortedHabits){
+  for(const h of habits){
     let done=0,streak=0,ls=true;for(let d=pd;d>=1;d--){const ds=yr+'-'+String(mo+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');if(h.completions&&h.completions[ds]){done++;if(ls)streak++;}else ls=false;}
     const pct=pd?Math.round(done/pd*100):0;
     const row=document.createElement('div');row.className='habit-row';
     let gh='';for(let d=1;d<=dim;d++){const ds=yr+'-'+String(mo+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');const ip=ds<=today,id2=!!(h.completions&&h.completions[ds]);const cls='habit-day'+((!ip)?' future':'')+(id2?' done':'');const st=id2?'background:'+h.color+';border-color:'+h.color:'';gh+='<button class="'+cls+'" data-ds="'+ds+'" style="'+st+'">'+(id2?'✓':(ip?d:''))+'</button>';}
-    row.innerHTML='<div class="habit-row-header"><span class="habit-emoji">'+h.emoji+'</span><span class="habit-name">'+h.nombre+'</span><span class="habit-streak">'+(streak>1?'🔥 '+streak:'')+'</span><span class="habit-pct">'+pct+'%</span><button class="habit-up-btn" style="background:transparent;border:none;color:#ffffff18;cursor:pointer;font-size:13px;padding:2px 3px" title="Subir">↑</button><button class="habit-down-btn" style="background:transparent;border:none;color:#ffffff18;cursor:pointer;font-size:13px;padding:2px 3px" title="Bajar">↓</button><button class="habit-edit-btn" style="background:transparent;border:none;color:#ffffff18;cursor:pointer;font-size:12px;padding:2px 4px">✎</button><button class="habit-del-btn" data-id="'+h.id+'">✕</button></div><div class="habit-grid">'+gh+'</div><div class="habit-progress-bar"><div class="habit-progress-fill" style="width:'+pct+'%;background:'+h.color+'"></div></div>';
+    row.innerHTML='<div class="habit-row-header"><span class="habit-emoji">'+h.emoji+'</span><span class="habit-name">'+h.nombre+'</span><span class="habit-streak">'+(streak>1?'🔥 '+streak:'')+'</span><span class="habit-pct">'+pct+'%</span><button class="habit-edit-btn" style="background:transparent;border:none;color:#ffffff18;cursor:pointer;font-size:12px;padding:2px 4px">✎</button><button class="habit-del-btn" data-id="'+h.id+'">✕</button></div><div class="habit-grid">'+gh+'</div><div class="habit-progress-bar"><div class="habit-progress-fill" style="width:'+pct+'%;background:'+h.color+'"></div></div>';
     row.querySelectorAll('.habit-day:not(.future)').forEach(btn=>{btn.addEventListener('click',()=>{const ds=btn.dataset.ds;if(!h.completions)h.completions={};h.completions[ds]=!h.completions[ds];if(!h.completions[ds])delete h.completions[ds];patchH(h.id,{completions:h.completions});});});
     row.querySelector('.habit-del-btn').addEventListener('click',()=>{delH(h.id);toast('Hábito eliminado');});
     row.querySelector('.habit-edit-btn').addEventListener('click',()=>openEditHab(h));
-    row.querySelector('.habit-up-btn').addEventListener('click',()=>moveHabit(h.id,-1));
-    row.querySelector('.habit-down-btn').addEventListener('click',()=>moveHabit(h.id,1));
     list.appendChild(row);
   }
 }
@@ -768,7 +757,7 @@ function renderHabits(){
 // Finance
 function renderFin(){
   const mt=curMonthTxs(),ing=mt.filter(t=>t.tipo==='ingreso').reduce((s,t)=>s+t.monto,0),gas=mt.filter(t=>t.tipo==='gasto').reduce((s,t)=>s+t.monto,0),sal=ing-gas;
-  document.getElementById('fin-ing').textContent=ars(ing);document.getElementById('fin-gas').textContent=ars(gas);document.getElementById('fin-sal').textContent=ars(sal);document.getElementById('fin-sal').style.color=sal>=0?'#e8e4dc':'#ff4d4d';
+  document.getElementById('fin-ing').textContent=ars(ing);document.getElementById('fin-gas').textContent=ars(gas);document.getElementById('fin-sal').textContent=ars(sal);document.getElementById('fin-sal').style.color=sal>=0?'#e8e4dc':'#ff4d4d';const ps=prevMonthSaldo();const psEl=document.getElementById('fin-prev-saldo');if(psEl)psEl.textContent=ps!==0?(ps>0?'+':'')+ars(ps)+' del mes anterior':'';
   const cats={};mt.filter(t=>t.tipo==='gasto').forEach(t=>cats[t.cat]=(cats[t.cat]||0)+t.monto);
   const cl=document.getElementById('cat-list');cl.innerHTML='';
   Object.entries(cats).sort((a,b)=>b[1]-a[1]).forEach(([cat,total])=>{const pct=gas?Math.round(total/gas*100):0,color=CC[cat]||'#ffffff30';const row=document.createElement('div');row.className='cat-row';row.innerHTML='<div class="cat-row-header"><div class="cat-dot" style="background:'+color+'"></div><span class="cat-name">'+(CI[cat]||'📦')+' '+cat+'</span><span class="cat-amounts">'+ars(total)+' · '+pct+'%</span></div><div class="cat-bar"><div class="cat-bar-fill" style="width:'+pct+'%;background:'+color+'"></div></div>';cl.appendChild(row);});
@@ -777,7 +766,7 @@ function renderFin(){
   [...txs].sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,10).forEach(t=>{const item=document.createElement('div');item.className='tx-item';const do2=new Date(t.fecha+'T12:00:00');item.innerHTML='<div class="tx-icon">'+(CI[t.cat]||'📦')+'</div><div class="tx-info"><div class="tx-desc">'+t.desc+'</div><div class="tx-meta">'+t.cat+' · '+do2.getDate()+' '+MESESL[do2.getMonth()]+'</div></div><div class="tx-amount '+(t.tipo==='ingreso'?'ing':'gas')+'">'+(t.tipo==='ingreso'?'+':'-')+ars(t.monto)+'</div><button style="background:transparent;border:none;color:#ffffff18;cursor:pointer;font-size:12px;padding:2px 4px" class="tx-edit">✎</button><button class="tx-del" data-id="'+t.id+'">✕</button>';item.querySelector('.tx-del').addEventListener('click',()=>{delT(t.id);toast('Eliminado');});
     item.querySelector('.tx-edit').addEventListener('click',()=>openEditTx(t));tl.appendChild(item);});
   if(!txs.length)tl.innerHTML='<div style="text-align:center;padding:20px;color:#ffffff12;font-size:12px">Sin transacciones</div>';
-  setTimeout(()=>{buildFinL();buildFinD();},50);
+  setTimeout(()=>{buildFinL();buildFinD();renderAhorro();},50);
 }
 
 // Dashboard
@@ -794,9 +783,9 @@ function renderDash(){
   const dh=document.getElementById('dash-habs');
   if(!habits.length)dh.innerHTML='<div style="color:#ffffff18;font-family:Fraunces,serif;font-size:13px;padding:8px 0">Sin hábitos configurados</div>';
   else dh.innerHTML=habits.slice(0,5).map(h=>{const d2=!!(h.completions&&h.completions[todayStr()]);return '<div class="dash-hab-row"><div class="dash-hab-check" style="border-color:'+h.color+';'+(d2?'background:'+h.color:'')+'">'+( d2?'✓':'')+'</div><span class="dash-hab-name">'+h.emoji+' '+h.nombre+'</span></div>';}).join('');
-  document.getElementById('dash-fin').innerHTML='<div class="dash-card"><div style="font-size:10px;color:#ffffff25;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px">Saldo</div><div style="font-family:Fraunces,serif;font-size:22px;font-weight:300;color:'+(ing-gas>=0?'#00e676':'#ff4d4d')+'">'+ars(ing-gas)+'</div></div><div class="dash-card"><div style="font-size:10px;color:#ffffff25;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px">Transacciones</div><div style="font-family:Fraunces,serif;font-size:22px;font-weight:300;color:#e8e4dc">'+mt.length+'</div></div>';
   setTimeout(buildDashChart,50);
-}
+  document.getElementById('dash-fin').innerHTML='<div class="dash-card"><div style="font-size:10px;color:#ffffff25;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px">Saldo</div><div style="font-family:Fraunces,serif;font-size:22px;font-weight:300;color:'+(ing-gas>=0?'#00e676':'#ff4d4d')+'">'+ars(ing-gas)+'</div></div><div class="dash-card"><div style="font-size:10px;color:#ffffff25;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px">Transacciones</div><div style="font-family:Fraunces,serif;font-size:22px;font-weight:300;color:#e8e4dc">'+mt.length+'</div></div>';
+  }
 
 // Charts
 const COPT={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#161616',titleColor:'#e8e4dc',bodyColor:'#ffffff50',borderColor:'#ffffff10',borderWidth:1}},scales:{x:{grid:{color:'#ffffff05'},ticks:{color:'#ffffff18',font:{size:9}}},y:{grid:{color:'#ffffff05'},ticks:{color:'#ffffff18',font:{size:9}}}}};
@@ -808,7 +797,7 @@ function buildFinD(){const ctx=document.getElementById('chart-fin-dona');if(!ctx
 // Nav
 document.getElementById('menu-btn').addEventListener('click',()=>{document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebar-overlay').classList.toggle('open');});
 document.getElementById('sidebar-overlay').addEventListener('click',()=>{document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');});
-document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('click',()=>{const page=item.dataset.page;document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));item.classList.add('active');document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+page).classList.add('active');document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');if(page==='habitos'){renderHabits();setTimeout(buildHabChart,100);}if(page==='finanzas'){renderFin();setTimeout(()=>{buildFinL();buildFinD();renderAhorro();},100);}if(page==='dashboard'){renderDash();setTimeout(buildDashChart,100);}});});
+document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('click',()=>{const page=item.dataset.page;document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));item.classList.add('active');document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+page).classList.add('active');document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');if(page==='habitos'){renderHabits();}if(page==='finanzas'){renderFin();setTimeout(()=>{buildFinL();buildFinD();renderAhorro();},50);}if(page==='dashboard'){renderDash();}});});
 
 // Agenda events
 document.getElementById('cal-prev').addEventListener('click',()=>{calMonth.setMonth(calMonth.getMonth()-1);buildCal();});
@@ -840,174 +829,86 @@ document.getElementById('add-habit-btn').addEventListener('click',()=>{document.
 document.getElementById('hab-cancel').addEventListener('click',()=>document.getElementById('hab-modal').classList.remove('open'));
 document.getElementById('hab-modal').addEventListener('click',e=>{if(e.target===document.getElementById('hab-modal'))document.getElementById('hab-modal').classList.remove('open');});
 document.querySelectorAll('.hab-color-btn').forEach(btn=>btn.addEventListener('click',()=>{selHabColor=btn.dataset.c;document.querySelectorAll('.hab-color-btn').forEach(b=>b.classList.toggle('sel',b.dataset.c===selHabColor));}));
-document.getElementById('hab-save').addEventListener('click',()=>{const n=document.getElementById('hab-nombre').value.trim(),e=selEmoji||'⭐';if(!n){toast('Poné un nombre','err');return;}const maxOrd=habits.length?Math.max(...habits.map(h=>h.orden||0)):0;const nh={id:Math.random().toString(36).slice(2)+Date.now().toString(36),nombre:n,emoji:e,color:selHabColor,completions:{},orden:maxOrd+1};saveH(nh);document.getElementById('hab-modal').classList.remove('open');toast('✓ Hábito agregado');});
+document.getElementById('hab-save').addEventListener('click',()=>{const n=document.getElementById('hab-nombre').value.trim(),e=document.getElementById('hab-emoji').value.trim()||'⭐';if(!n){toast('Poné un nombre','err');return;}const nh={id:Math.random().toString(36).slice(2)+Date.now().toString(36),nombre:n,emoji:e,color:selHabColor,completions:{}};saveH(nh);document.getElementById('hab-modal').classList.remove('open');toast('✓ Hábito agregado');});
 
 // Finance events
-document.getElementById('add-tx-btn').addEventListener('click',()=>{
-  delete document.getElementById('tx-modal').dataset.editId;
-  document.getElementById('tx-desc').value='';
-  document.getElementById('tx-monto').value='';
-  document.getElementById('tx-fecha').value=todayStr();
-  document.getElementById('tx-modal').classList.add('open');
-});
+document.getElementById('add-tx-btn').addEventListener('click',()=>{document.getElementById('tx-desc').value='';document.getElementById('tx-monto').value='';document.getElementById('tx-fecha').value=todayStr();document.getElementById('tx-modal').classList.add('open');});
 document.getElementById('tx-cancel').addEventListener('click',()=>document.getElementById('tx-modal').classList.remove('open'));
 document.getElementById('tx-modal').addEventListener('click',e=>{if(e.target===document.getElementById('tx-modal'))document.getElementById('tx-modal').classList.remove('open');});
-document.getElementById('tx-save').addEventListener('click',()=>{
-  const monto=parseFloat(document.getElementById('tx-monto').value);
-  if(!monto||monto<=0){toast('Ingresá un monto','err');return;}
-  const desc=document.getElementById('tx-desc').value.trim(),
-        tipo=document.getElementById('tx-tipo').value,
-        cat=document.getElementById('tx-cat').value,
-        fecha=document.getElementById('tx-fecha').value;
-  const modal=document.getElementById('tx-modal');
-  const editId=modal.dataset.editId;
-  if(tipo==='ahorro'){
-    saveA({id:Math.random().toString(36).slice(2)+Date.now().toString(36),desc:desc||'Ahorro',monto,fecha});
-    modal.classList.remove('open');toast('🏦 Guardado en ahorro');return;
-  }
-  if(editId){
-    const ex=txs.find(x=>x.id===editId);
-    if(ex)saveT({...ex,tipo,desc:desc||cat,monto,cat,fecha});
-    delete modal.dataset.editId;
-  } else {
-    saveT({id:Math.random().toString(36).slice(2)+Date.now().toString(36),tipo,desc:desc||cat,monto,cat,fecha});
-  }
-  modal.classList.remove('open');toast('✓ Guardado');
-});
+document.getElementById('tx-save').addEventListener('click',()=>{const monto=parseFloat(document.getElementById('tx-monto').value);if(!monto||monto<=0){toast('Ingresá un monto','err');return;}const desc=document.getElementById('tx-desc').value.trim(),tipo=document.getElementById('tx-tipo').value,cat=document.getElementById('tx-cat').value,fecha=document.getElementById('tx-fecha').value;const modal=document.getElementById('tx-modal'),editId=modal.dataset.editId;if(tipo==='ahorro'){saveA({id:Math.random().toString(36).slice(2)+Date.now().toString(36),desc:desc||'Ahorro',monto,fecha});modal.classList.remove('open');toast('🏦 Guardado en ahorro');return;}if(editId){const ex=txs.find(x=>x.id===editId);if(ex)saveT({...ex,tipo,desc:desc||cat,monto,cat,fecha});delete modal.dataset.editId;}else{saveT({id:Math.random().toString(36).slice(2)+Date.now().toString(36),tipo,desc:desc||cat,monto,cat,fecha});}modal.classList.remove('open');toast('✓ Guardado');});
 
 
 // ── Charts ────────────────────────────────────────────────────────────────
 
-// ── prevMonthSaldo + renderAhorro ──────────────────────────────────────────
-function prevMonthSaldo(){const now=new Date(),prev=new Date(now.getFullYear(),now.getMonth()-1,1),yr=prev.getFullYear(),mo=String(prev.getMonth()+1).padStart(2,'0');const pt=txs.filter(t=>t.fecha&&t.fecha.startsWith(yr+'-'+mo));const i=pt.filter(t=>t.tipo==='ingreso').reduce((s,t)=>s+t.monto,0),g=pt.filter(t=>t.tipo==='gasto').reduce((s,t)=>s+t.monto,0);return i-g;}
+// ── prevMonthSaldo ────────────────────────────────────────────────────────
+function prevMonthSaldo(){const now=new Date(),prev=new Date(now.getFullYear(),now.getMonth()-1,1),yr=prev.getFullYear(),mo=String(prev.getMonth()+1).padStart(2,'0');const pt=txs.filter(t=>t.fecha&&t.fecha.startsWith(yr+'-'+mo));return pt.filter(t=>t.tipo==='ingreso').reduce((s,t)=>s+t.monto,0)-pt.filter(t=>t.tipo==='gasto').reduce((s,t)=>s+t.monto,0);}
 
+// ── renderAhorro ──────────────────────────────────────────────────────────
 function renderAhorro(){
   const total=ahorros.reduce((s,a)=>s+a.monto,0);
-  document.getElementById('ahorro-total').textContent='$'+Math.round(total).toLocaleString('es-AR');
+  document.getElementById('ahorro-total').textContent=ars(total);
   document.getElementById('ahorro-count').textContent=ahorros.length+' movimiento'+(ahorros.length===1?'':'s');
   const pw=document.getElementById('ahorro-progress-wrap');
-  if(metaAhorro>0){pw.style.display='block';const pct=Math.min(100,Math.round(total/metaAhorro*100));document.getElementById('ahorro-pct').textContent=pct+'%';document.getElementById('ahorro-progress-bar').style.width=pct+'%';document.getElementById('ahorro-meta-display').textContent='$'+Math.round(metaAhorro).toLocaleString('es-AR');}
+  if(metaAhorro>0){pw.style.display='block';const pct=Math.min(100,Math.round(total/metaAhorro*100));document.getElementById('ahorro-pct').textContent=pct+'%';document.getElementById('ahorro-progress-bar').style.width=pct+'%';document.getElementById('ahorro-meta-display').textContent=ars(metaAhorro);}
   else{pw.style.display='none';document.getElementById('ahorro-meta-display').textContent='Sin meta';}
   const list=document.getElementById('ahorro-list');list.innerHTML='';
   if(!ahorros.length){list.innerHTML='<div style="text-align:center;padding:14px;color:#ffffff18;font-size:12px">Sin movimientos todavía</div>';return;}
   [...ahorros].sort((a,b)=>b.fecha.localeCompare(a.fecha)).forEach(a=>{
-    const item=document.createElement('div');
-    item.style.cssText='display:flex;align-items:center;gap:10px;padding:10px 12px;background:#ffb84408;border:1px solid #ffb84420;border-radius:11px;margin-bottom:6px';
-    const d2=new Date(a.fecha+'T12:00:00');
-    const MESES2=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-    item.innerHTML='<div style="font-size:16px">🏦</div><div style="flex:1"><div style="font-family:Fraunces,serif;font-size:13px;color:#e8e4dc">'+a.desc+'</div><div style="font-size:10px;color:#ffffff25;margin-top:2px">'+d2.getDate()+' '+MESES2[d2.getMonth()]+'</div></div><div style="font-family:Space Mono,monospace;font-size:13px;font-weight:700;color:#ffb844">+$'+Math.round(a.monto).toLocaleString('es-AR')+'</div><button style="background:transparent;border:none;color:#ffffff15;cursor:pointer;font-size:12px;padding:2px 4px" class="a-del">✕</button>';
+    const item=document.createElement('div');item.style.cssText='display:flex;align-items:center;gap:10px;padding:10px 12px;background:#ffb84408;border:1px solid #ffb84420;border-radius:11px;margin-bottom:6px';
+    const do2=new Date(a.fecha+'T12:00:00');
+    item.innerHTML='<div style="font-size:16px">🏦</div><div style="flex:1"><div style="font-family:Fraunces,serif;font-size:13px;color:#e8e4dc">'+a.desc+'</div><div style="font-size:10px;color:#ffffff25;margin-top:2px">'+do2.getDate()+' '+MESESL[do2.getMonth()]+'</div></div><div style="font-family:Space Mono,monospace;font-size:13px;font-weight:700;color:#ffb844">+'+ars(a.monto)+'</div><button style="background:transparent;border:none;color:#ffffff15;cursor:pointer;font-size:12px;padding:2px 4px" class="a-del">✕</button>';
     item.querySelector('.a-del').addEventListener('click',()=>{delA(a.id);toast('Eliminado');});
     list.appendChild(item);
   });
 }
 
-// ── openEditTx ─────────────────────────────────────────────────────────────
+// ── Edit transaction ──────────────────────────────────────────────────────
 function openEditTx(t){
-  document.getElementById('tx-tipo').value=t.tipo||'gasto';
-  document.getElementById('tx-desc').value=t.desc||'';
+  document.getElementById('tx-tipo').value=t.tipo;
+  document.getElementById('tx-desc').value=t.desc;
   document.getElementById('tx-monto').value=t.monto;
-  document.getElementById('tx-cat').value=t.cat||'Otro';
+  document.getElementById('tx-cat').value=t.cat;
   document.getElementById('tx-fecha').value=t.fecha;
   document.getElementById('tx-modal').dataset.editId=t.id;
   document.getElementById('tx-modal').classList.add('open');
 }
 
-document.getElementById('edit-hab-save').addEventListener('click',()=>{
-  const nombre=document.getElementById('edit-hab-nombre').value.trim();
-  if(!nombre){toast('Poné un nombre','err');return;}
-  const h=habits.find(x=>x.id===editHabId);
-  const emojiTrigger=document.getElementById('edit-emoji-trigger');
-  const emojiToSave=emojiTrigger?emojiTrigger.textContent.trim()||editHabEmoji||h.emoji||'⭐':editHabEmoji||h.emoji||'⭐';
-  if(h)patchH(editHabId,{nombre,emoji:emojiToSave,color:editHabColor});
-  document.getElementById('edit-hab-modal').classList.remove('open');toast('✓ Actualizado');
-});
+// ── Emoji pickers ─────────────────────────────────────────────────────────
+const EMOJIS=['😀','😎','💪','🏃','📚','✏️','🎯','🎮','🏋️','🧘','🍎','💧','😴','🌅','💼','💰','🚗','🎵','🎨','⭐','🔥','✅','🧠','❤️','🌿','☀️','🌙','⚡','🎸','🏊','🚴','🤸','🥗','🥤','📱','💻','📝','🗓️','🏆','🎖️','💡'];
+let selEmoji='',editHabEmoji='⭐',editHabColor='#e8e4dc',editHabId=null;
 
-// ── Meta ahorro ────────────────────────────────────────────────────────────
-document.getElementById('set-meta-btn').addEventListener('click',()=>{document.getElementById('meta-monto').value=metaAhorro||'';document.getElementById('meta-modal').classList.add('open');});
-document.getElementById('meta-cancel').addEventListener('click',()=>document.getElementById('meta-modal').classList.remove('open'));
-document.getElementById('meta-modal').addEventListener('click',e=>{if(e.target===document.getElementById('meta-modal'))document.getElementById('meta-modal').classList.remove('open');});
-document.getElementById('meta-save').addEventListener('click',()=>{const v=parseFloat(document.getElementById('meta-monto').value);metaAhorro=v>0?v:0;v>0?localStorage.setItem('midia-meta-ahorro',v):localStorage.removeItem('midia-meta-ahorro');document.getElementById('meta-modal').classList.remove('open');renderAhorro();toast('✓ Meta guardada');});
-
-
-// ── openEditHab ───────────────────────────────────────────────────────────
-let editHabId=null,editHabEmoji='⭐',editHabColor='#e8e4dc';
-
-function moveHabit(id, dir) {
-  const sorted = [...habits].sort((a,b)=>(a.orden||0)-(b.orden||0));
-  const idx = sorted.findIndex(h=>h.id===id);
-  const swapIdx = idx + dir;
-  if(swapIdx < 0 || swapIdx >= sorted.length) return;
-  const a = sorted[idx], b = sorted[swapIdx];
-  const aOrd = a.orden||idx, bOrd = b.orden||swapIdx;
-  patchH(a.id, {orden: bOrd});
-  patchH(b.id, {orden: aOrd});
+function makeEmojiGrid(gridEl,triggerEl,onSelect){
+  gridEl.innerHTML='';
+  EMOJIS.forEach(em=>{const b=document.createElement('button');b.textContent=em;b.style.cssText='background:transparent;border:none;font-size:20px;cursor:pointer;padding:3px;border-radius:6px';b.addEventListener('mouseenter',()=>b.style.background='#ffffff10');b.addEventListener('mouseleave',()=>b.style.background='transparent');b.addEventListener('click',e=>{e.stopPropagation();onSelect(em);triggerEl.textContent=em;gridEl.parentElement.style.display='none';});gridEl.appendChild(b);});
 }
+// New habit emoji picker
+const etrigger=document.getElementById('emoji-trigger'),epicker=document.getElementById('emoji-picker');
+if(etrigger&&epicker){makeEmojiGrid(document.getElementById('emoji-grid'),etrigger,(em)=>{selEmoji=em;});etrigger.addEventListener('click',e=>{e.stopPropagation();epicker.style.display=epicker.style.display==='none'?'block':'none';});epicker.addEventListener('click',e=>e.stopPropagation());}
+// Edit habit emoji picker
+const eetrigger=document.getElementById('edit-emoji-trigger'),eepicker=document.getElementById('edit-emoji-picker');
+if(eetrigger&&eepicker){makeEmojiGrid(document.getElementById('edit-emoji-grid'),eetrigger,(em)=>{editHabEmoji=em;});eetrigger.addEventListener('click',e=>{e.stopPropagation();eepicker.style.display=eepicker.style.display==='none'?'block':'none';});eepicker.addEventListener('click',e=>e.stopPropagation());}
+document.addEventListener('click',()=>{if(epicker)epicker.style.display='none';if(eepicker)eepicker.style.display='none';});
+
+// ── Edit habit ────────────────────────────────────────────────────────────
 function openEditHab(h){
-  editHabId=h.id;editHabColor=h.color||'#e8e4dc';editHabEmoji=h.emoji||'⭐';
+  editHabId=h.id;editHabEmoji=h.emoji||'⭐';editHabColor=h.color||'#e8e4dc';
   document.getElementById('edit-hab-nombre').value=h.nombre;
+  if(eetrigger)eetrigger.textContent=editHabEmoji;
   document.querySelectorAll('#edit-hab-colors .hab-color-btn').forEach(b=>b.classList.toggle('sel',b.dataset.c===editHabColor));
-  const et=document.getElementById('edit-emoji-trigger');
-  if(et){et.textContent=editHabEmoji;}
-  // Rebuild emoji grid so clicks register fresh
-  makeEmojiGrid('edit-emoji-grid','edit-emoji-trigger','edit-emoji-dropdown',em=>{editHabEmoji=em;});
   document.getElementById('edit-hab-modal').classList.add('open');
 }
 document.querySelectorAll('#edit-hab-colors .hab-color-btn').forEach(btn=>btn.addEventListener('click',()=>{editHabColor=btn.dataset.c;document.querySelectorAll('#edit-hab-colors .hab-color-btn').forEach(b=>b.classList.toggle('sel',b.dataset.c===editHabColor));}));
 document.getElementById('edit-hab-cancel').addEventListener('click',()=>document.getElementById('edit-hab-modal').classList.remove('open'));
 document.getElementById('edit-hab-modal').addEventListener('click',e=>{if(e.target===document.getElementById('edit-hab-modal'))document.getElementById('edit-hab-modal').classList.remove('open');});
-document.getElementById('edit-hab-save').addEventListener('click',()=>{
-  const nombre=document.getElementById('edit-hab-nombre').value.trim();
-  if(!nombre){toast('Poné un nombre','err');return;}
-  const h=habits.find(x=>x.id===editHabId);
-  if(h)patchH(editHabId,{nombre,emoji:h.emoji||'⭐',color:editHabColor});
-  document.getElementById('edit-hab-modal').classList.remove('open');toast('✓ Actualizado');
-});
+document.getElementById('edit-hab-save').addEventListener('click',()=>{const nombre=document.getElementById('edit-hab-nombre').value.trim();if(!nombre){toast('Poné un nombre','err');return;}patchH(editHabId,{nombre,emoji:editHabEmoji,color:editHabColor});document.getElementById('edit-hab-modal').classList.remove('open');toast('✓ Actualizado');});
 
-// ── Emoji picker ──────────────────────────────────────────────────────────
-const EMOJIS = ['⭐','🔥','💪','📚','✅','🎯','🏃','🧘','🍎','💧','😴','🌅','💼','💰','🚗','🎵','🎨','🏋️','🧠','❤️','🌿','☀️','🌙','⚡','🎸','🏊','🚴','🥗','🥤','📱','💻','📝','🗓️','🏆','💡','😎','🎮','🏠','✈️','🌍'];
-let selEmoji = '⭐';
+// ── Meta ahorro ───────────────────────────────────────────────────────────
+document.getElementById('set-meta-btn').addEventListener('click',()=>{document.getElementById('meta-monto').value=metaAhorro||'';document.getElementById('meta-modal').classList.add('open');});
+document.getElementById('meta-cancel').addEventListener('click',()=>document.getElementById('meta-modal').classList.remove('open'));
+document.getElementById('meta-modal').addEventListener('click',e=>{if(e.target===document.getElementById('meta-modal'))document.getElementById('meta-modal').classList.remove('open');});
+document.getElementById('meta-save').addEventListener('click',()=>{const v=parseFloat(document.getElementById('meta-monto').value);metaAhorro=v>0?v:0;if(v>0)localStorage.setItem('midia-meta-ahorro',v);else localStorage.removeItem('midia-meta-ahorro');document.getElementById('meta-modal').classList.remove('open');renderAhorro();toast('✓ Meta guardada');});
 
-function makeEmojiGrid(gridId, triggerId, dropdownId, onPick) {
-  const grid = document.getElementById(gridId);
-  const trigger = document.getElementById(triggerId);
-  const dropdown = document.getElementById(dropdownId);
-  if (!grid || !trigger || !dropdown) return;
-  grid.innerHTML = '';
-  EMOJIS.forEach(em => {
-    const b = document.createElement('button');
-    b.textContent = em; b.type = 'button';
-    b.addEventListener('click', e => {
-      e.stopPropagation();
-      trigger.textContent = em;
-      onPick(em);
-      dropdown.classList.remove('open');
-    });
-    grid.appendChild(b);
-  });
-  trigger.addEventListener('click', e => {
-    e.stopPropagation();
-    dropdown.classList.toggle('open');
-  });
-  dropdown.addEventListener('click', e => e.stopPropagation());
-}
-
-makeEmojiGrid('emoji-grid', 'emoji-trigger', 'emoji-dropdown', em => { selEmoji = em; });
-makeEmojiGrid('edit-emoji-grid', 'edit-emoji-trigger', 'edit-emoji-dropdown', em => { editHabEmoji = em; });
-
-document.addEventListener('click', () => {
-  document.querySelectorAll('.emoji-dropdown.open').forEach(d => d.classList.remove('open'));
-});
-
-// Reset emoji on open new habit
-const origHabOpen = document.getElementById('add-habit-btn');
-origHabOpen.addEventListener('click', () => {
-  selEmoji = '⭐';
-  const t = document.getElementById('emoji-trigger');
-  if (t) t.textContent = '⭐';
-  document.getElementById('hab-modal').classList.add('open');
-});
-
-// ── Nav callbacks with chart triggers ─────────────────────────────────────
+// ── Nav callbacks update ──────────────────────────────────────────────────
 
 // Init
 setTimeout(initGCal,800);
