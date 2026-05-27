@@ -87,10 +87,10 @@
     .day-btn.active .dmes{color:#08080850 !important}
     .day-btn.has-tasks{border-color:#ffffff20;color:#ffffff55}
     .day-btn.today:not(.active) .dnum{color:#e8e4dc}
-    #gcal-bar{background:#0e0e0e;border:1px solid #ffffff08;border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    #gcal-bar{background:#0e0e0e;border:1px solid #ffffff08;border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:12px}
     .gcal-title{font-size:10px;color:#ffffff25;letter-spacing:2px;text-transform:uppercase}
     #gcal-status{font-size:12px;color:#00b894;margin-top:2px;font-family:'Fraunces',serif}
-    #gcal-btns{display:flex;gap:6px;flex-wrap:wrap}
+    #gcal-btns{display:flex;gap:6px;flex-shrink:0}
     #gcal-connect{background:linear-gradient(135deg,#4285f4,#34a853);border:none;border-radius:9px;color:#fff;font-family:'Space Mono',monospace;font-size:11px;padding:7px 13px;cursor:pointer}
     #gcal-sync-all{display:none;background:#ffffff08;border:1px solid #ffffff12;border-radius:9px;color:#ffffff40;font-family:'Space Mono',monospace;font-size:10px;padding:6px 10px;cursor:pointer}
     #ia-bubble{background:#0e0e0e;border:1px solid #ffffff08;border-radius:14px;padding:14px 18px;display:flex;gap:12px;align-items:flex-start}
@@ -655,12 +655,10 @@ onSnapshot(ACOL,snap=>{
 async function saveTask(t){sync('syncing');await setDoc(doc(db,'tareas',t.id),t);sync('ok');if(gcalUser&&gcalToken)gSync(t,t.fecha||selDate).catch(()=>{});}
 async function delTask(id){
   const t=allTareas.find(x=>x.id===id);
-  sync('syncing');
-  await deleteDoc(doc(db,'tareas',id));
-  sync('ok');
+  sync('syncing');await deleteDoc(doc(db,'tareas',id));sync('ok');
   if(t&&gcalUser&&t.gcalEventId&&Object.keys(t.gcalEventId).length){
     try{
-      await gTok(); // ensure token is fresh
+      await gTok();
       for(const eid of Object.values(t.gcalEventId)){
         try{await gReq('DELETE','/calendars/primary/events/'+eid);}catch(e){}
       }
@@ -804,19 +802,7 @@ function connGCal(){if(!tokenClient){initGCal();setTimeout(connGCal,800);return;
 function discGCal(){if(gcalToken)google.accounts.oauth2.revoke(gcalToken,()=>{});gcalToken=null;gcalUser=null;tokenExp=0;localStorage.removeItem('gcal-user');updateGCalUI();}
 async function gReq(method,path,body){if(!gcalUser)return null;let tok;try{tok=await gTok();}catch(e){return null;}const r=await fetch('https://www.googleapis.com/calendar/v3'+path,{method,headers:{'Authorization':'Bearer '+tok,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});if(r.status===401){gcalToken=null;tokenExp=0;try{tok=await gTok();const r2=await fetch('https://www.googleapis.com/calendar/v3'+path,{method,headers:{'Authorization':'Bearer '+tok,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});if(r2.status===204)return true;return r2.json().catch(()=>null);}catch(e){return null;}}if(r.status===204)return true;if(!r.ok)return null;return r.json().catch(()=>null);}
 async function gSync(tarea,ds){if(!gcalUser)return;const key=ds||tarea.fecha||todayStr(),tz=Intl.DateTimeFormat().resolvedOptions().timeZone;let start,end;if(tarea.hora){const[h,m]=tarea.hora.split(':');const eh=String(parseInt(h)+1).padStart(2,'0');start={dateTime:key+'T'+h+':'+m+':00',timeZone:tz};end={dateTime:key+'T'+eh+':'+m+':00',timeZone:tz};}else{start={date:key};end={date:key};}const ev={summary:tarea.texto,description:'[Mi Día]',start,end};try{if(tarea.gcalEventId&&tarea.gcalEventId[key]){await gReq('PUT','/calendars/primary/events/'+tarea.gcalEventId[key],ev);toast('✓ Actualizado');}else{const r=await gReq('POST','/calendars/primary/events',ev);if(r&&r.id){const gid={...(tarea.gcalEventId||{}),[key]:r.id};await patchTask(tarea.id,{gcalEventId:gid});toast('✓ Agregado a Calendar');renderTasks();}else toast('🔄 No se pudo sync','err');}}catch(e){toast('🔄 Tocá 🔄 para reintentar','err');}}
-async function syncAll(){if(!gcalUser){toast('Conectá Google Calendar','err');return;}const b=document.getElementById('gcal-sync-all');b.textContent='...';b.disabled=true;let ok=0,sk=0;for(const t of allTareas){if(t.recurrentDays&&t.recurrentDays.length){const tn=new Date();for(let w=0;w<4;w++){for(const dow of t.recurrentDays){const d=new Date(tn);d.setDate(tn.getDate()+((dow-tn.getDay()+7)%7)+w*7);const ds=sfd(d);if(ds>=todayStr()){if(t.gcalEventId&&t.gcalEventId[ds]){
-          // Verify event still exists in GCal
-          const check=await gReq('GET','/calendars/primary/events/'+t.gcalEventId[ds]).catch(()=>null);
-          if(check&&check.id){sk++;continue;}
-          // Event doesn't exist, clear the stale ID and recreate
-          const newGid={...t.gcalEventId};delete newGid[ds];
-          await patchTask(t.id,{gcalEventId:newGid});
-        }try{await gSync(t,ds);ok++;}catch(e){}await new Promise(r=>setTimeout(r,200));}}}}else if(t.fecha&&t.fecha>=todayStr()){if(t.gcalEventId&&t.gcalEventId[t.fecha]){
-        const check=await gReq('GET','/calendars/primary/events/'+t.gcalEventId[t.fecha]).catch(()=>null);
-        if(check&&check.id){sk++;continue;}
-        const newGid={...t.gcalEventId};delete newGid[t.fecha];
-        await patchTask(t.id,{gcalEventId:newGid});
-      }try{await gSync(t,t.fecha);ok++;}catch(e){}await new Promise(r=>setTimeout(r,200));}}b.textContent='Sincronizar todo';b.disabled=false;toast(ok===0?'✓ Todo ya sincronizado':'✓ '+ok+' sincronizados');}
+async function syncAll(){if(!gcalUser){toast('Conectá Google Calendar','err');return;}const b=document.getElementById('gcal-sync-all');b.textContent='...';b.disabled=true;let ok=0,sk=0;for(const t of allTareas){if(t.recurrentDays&&t.recurrentDays.length){const tn=new Date();for(let w=0;w<4;w++){for(const dow of t.recurrentDays){const d=new Date(tn);d.setDate(tn.getDate()+((dow-tn.getDay()+7)%7)+w*7);const ds=sfd(d);if(ds>=todayStr()){if(t.gcalEventId&&t.gcalEventId[ds]){sk++;continue;}try{await gSync(t,ds);ok++;}catch(e){}await new Promise(r=>setTimeout(r,200));}}}}else if(t.fecha&&t.fecha>=todayStr()){if(t.gcalEventId&&t.gcalEventId[t.fecha]){sk++;continue;}try{await gSync(t,t.fecha);ok++;}catch(e){}await new Promise(r=>setTimeout(r,200));}}b.textContent='Sincronizar todo';b.disabled=false;toast(ok===0?'✓ Todo ya sincronizado':'✓ '+ok+' sincronizados');}
 
 // Habits
 function renderHabits(){
