@@ -90,9 +90,9 @@
     #gcal-bar{background:#0e0e0e;border:1px solid #ffffff08;border-radius:14px;padding:12px 16px;display:flex;flex-direction:column;gap:10px}
     .gcal-title{font-size:10px;color:#ffffff25;letter-spacing:2px;text-transform:uppercase}
     #gcal-status{font-size:12px;color:#00b894;margin-top:2px;font-family:'Fraunces',serif}
-    #gcal-btns{display:flex;gap:6px;flex-wrap:wrap;width:100%}
-    #gcal-connect{background:linear-gradient(135deg,#4285f4,#34a853);border:none;border-radius:9px;color:#fff;font-family:'Space Mono',monospace;font-size:11px;padding:7px 13px;cursor:pointer}
-    #gcal-sync-all{display:none;background:#ffffff08;border:1px solid #ffffff12;border-radius:9px;color:#ffffff40;font-family:'Space Mono',monospace;font-size:10px;padding:6px 10px;cursor:pointer}
+    #gcal-btns{display:flex;flex-direction:column;gap:5px;width:100%}
+    #gcal-connect{background:linear-gradient(135deg,#4285f4,#34a853);border:none;border-radius:9px;color:#fff;font-family:'Space Mono',monospace;font-size:11px;padding:7px 13px;cursor:pointer;width:100%}
+    #gcal-sync-all{display:none;background:#ffffff08;border:1px solid #ffffff12;border-radius:9px;color:#ffffff40;font-family:'Space Mono',monospace;font-size:10px;padding:6px 10px;cursor:pointer;width:100%}
     #ia-bubble{background:#0e0e0e;border:1px solid #ffffff08;border-radius:14px;padding:14px 18px;display:flex;gap:12px;align-items:flex-start}
     #ia-avatar{width:30px;height:30px;border-radius:50%;background:#e8e4dc;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;color:#080808}
     #ia-label{font-size:10px;color:#ffffff25;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px}
@@ -804,9 +804,44 @@ function connGCal(){if(!tokenClient){initGCal();setTimeout(connGCal,800);return;
 function discGCal(){if(gcalToken)google.accounts.oauth2.revoke(gcalToken,()=>{});gcalToken=null;gcalUser=null;tokenExp=0;localStorage.removeItem('gcal-user');updateGCalUI();}
 async function gReq(method,path,body){if(!gcalUser)return null;let tok;try{tok=await gTok();}catch(e){return null;}const r=await fetch('https://www.googleapis.com/calendar/v3'+path,{method,headers:{'Authorization':'Bearer '+tok,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});if(r.status===401){gcalToken=null;tokenExp=0;try{tok=await gTok();const r2=await fetch('https://www.googleapis.com/calendar/v3'+path,{method,headers:{'Authorization':'Bearer '+tok,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});if(r2.status===204)return true;return r2.json().catch(()=>null);}catch(e){return null;}}if(r.status===204)return true;if(!r.ok)return null;return r.json().catch(()=>null);}
 async function gSync(tarea,ds){if(!gcalUser)return;const key=ds||tarea.fecha||todayStr(),tz=Intl.DateTimeFormat().resolvedOptions().timeZone;let start,end;if(tarea.hora){const[h,m]=tarea.hora.split(':');const eh=String(parseInt(h)+1).padStart(2,'0');start={dateTime:key+'T'+h+':'+m+':00',timeZone:tz};end={dateTime:key+'T'+eh+':'+m+':00',timeZone:tz};}else{start={date:key};end={date:key};}const ev={summary:tarea.texto,description:'[Mi Día]',start,end};try{if(tarea.gcalEventId&&tarea.gcalEventId[key]){await gReq('PUT','/calendars/primary/events/'+tarea.gcalEventId[key],ev);toast('✓ Actualizado');}else{const r=await gReq('POST','/calendars/primary/events',ev);if(r&&r.id){const gid={...(tarea.gcalEventId||{}),[key]:r.id};await patchTask(tarea.id,{gcalEventId:gid});toast('✓ Agregado a Calendar');renderTasks();}else toast('🔄 No se pudo sync','err');}}catch(e){toast('🔄 Tocá 🔄 para reintentar','err');}}
-async function syncAll(){if(!gcalUser){toast('Conectá Google Calendar','err');return;}const b=document.getElementById('gcal-sync-all');b.textContent='...';b.disabled=true;let ok=0,sk=0;for(const t of allTareas){if(t.recurrentDays&&t.recurrentDays.length){const tn=new Date();for(let w=0;w<4;w++){for(const dow of t.recurrentDays){const d=new Date(tn);d.setDate(tn.getDate()+((dow-tn.getDay()+7)%7)+w*7);const ds=sfd(d);if(ds>=todayStr()){if(t.gcalEventId&&t.gcalEventId[ds]){sk++;continue;}try{await gSync(t,ds);ok++;}catch(e){}await new Promise(r=>setTimeout(r,200));}}}}else if(t.fecha&&t.fecha>=todayStr()){if(t.gcalEventId&&t.gcalEventId[t.fecha]){sk++;continue;}try{await gSync(t,t.fecha);ok++;}catch(e){}await new Promise(r=>setTimeout(r,200));}}b.textContent='Sincronizar todo';b.disabled=false;toast(ok===0?'✓ Todo ya sincronizado':'✓ '+ok+' sincronizados');}
+async function syncAll(){
+  if(!gcalUser){toast('Conectá Google Calendar','err');return;}
+  const b=document.getElementById('gcal-sync-all');
+  b.textContent='Sincronizando...';b.disabled=true;
+  let ok=0,sk=0;
+  try{
+    for(const t of allTareas){
+      if(t.recurrentDays&&t.recurrentDays.length){
+        const tn=new Date();
+        for(let w=0;w<2;w++){
+          for(const dow of t.recurrentDays){
+            const d=new Date(tn);d.setDate(tn.getDate()+((dow-tn.getDay()+7)%7)+w*7);
+            const ds=sfd(d);
+            if(ds>=todayStr()){
+              if(t.gcalEventId&&t.gcalEventId[ds]){sk++;continue;}
+              try{
+                await Promise.race([gSync(t,ds),new Promise((_,r)=>setTimeout(()=>r('timeout'),5000))]);
+                ok++;b.textContent='✓ '+ok+' sincronizados';
+              }catch(e){}
+              await new Promise(r=>setTimeout(r,50));
+            }
+          }
+        }
+      } else if(t.fecha&&t.fecha>=todayStr()){
+        if(t.gcalEventId&&t.gcalEventId[t.fecha]){sk++;continue;}
+        try{
+          await Promise.race([gSync(t,t.fecha),new Promise((_,r)=>setTimeout(()=>r('timeout'),5000))]);
+          ok++;b.textContent='✓ '+ok+' sincronizados';
+        }catch(e){}
+        await new Promise(r=>setTimeout(r,50));
+      }
+    }
+  }finally{
+    b.textContent='Sincronizar todo';b.disabled=false;
+    toast(ok===0?'✓ Todo ya sincronizado':'✓ '+ok+' sincronizados');
+  }
+}
 
-// Habits
 function renderHabits(){
   const yr=habMonth.getFullYear(),mo=habMonth.getMonth(),dim=new Date(yr,mo+1,0).getDate(),today=todayStr();
   const MF=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
