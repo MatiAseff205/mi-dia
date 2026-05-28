@@ -810,11 +810,6 @@ async function syncAll(){
   b.textContent='Sincronizando...';b.disabled=true;
   let ok=0,sk=0;
   try{
-    // Helper: check if GCal event still exists
-    async function eventExists(eid){
-      const r=await gReq('GET','/calendars/primary/events/'+eid);
-      return r&&r.id;
-    }
     for(const t of allTareas){
       if(t.recurrentDays&&t.recurrentDays.length){
         const tn=new Date();
@@ -823,16 +818,7 @@ async function syncAll(){
             const d=new Date(tn);d.setDate(tn.getDate()+((dow-tn.getDay()+7)%7)+w*7);
             const ds=sfd(d);
             if(ds>=todayStr()){
-              // If we have a saved ID, verify it still exists
-              if(t.gcalEventId&&t.gcalEventId[ds]){
-                try{
-                  const exists=await Promise.race([eventExists(t.gcalEventId[ds]),new Promise((_,r)=>setTimeout(()=>r(false),3000))]);
-                  if(exists){sk++;continue;}
-                  // Event was deleted from Calendar - clear the stale ID
-                  const g={...t.gcalEventId};delete g[ds];
-                  await patchTask(t.id,{gcalEventId:g});
-                }catch(e){sk++;continue;}
-              }
+              if(t.gcalEventId&&t.gcalEventId[ds]){sk++;continue;}
               try{
                 await Promise.race([gSync(t,ds),new Promise((_,r)=>setTimeout(()=>r('timeout'),5000))]);
                 ok++;b.textContent='✓ '+ok+' sincronizados';
@@ -842,14 +828,7 @@ async function syncAll(){
           }
         }
       } else if(t.fecha&&t.fecha>=todayStr()){
-        if(t.gcalEventId&&t.gcalEventId[t.fecha]){
-          try{
-            const exists=await Promise.race([eventExists(t.gcalEventId[t.fecha]),new Promise((_,r)=>setTimeout(()=>r(false),3000))]);
-            if(exists){sk++;continue;}
-            const g={...t.gcalEventId};delete g[t.fecha];
-            await patchTask(t.id,{gcalEventId:g});
-          }catch(e){sk++;continue;}
-        }
+        if(t.gcalEventId&&t.gcalEventId[t.fecha]){sk++;continue;}
         try{
           await Promise.race([gSync(t,t.fecha),new Promise((_,r)=>setTimeout(()=>r('timeout'),5000))]);
           ok++;b.textContent='✓ '+ok+' sincronizados';
