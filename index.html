@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -88,12 +87,12 @@
     .day-btn.active .dmes{color:#08080850 !important}
     .day-btn.has-tasks{border-color:#ffffff20;color:#ffffff55}
     .day-btn.today:not(.active) .dnum{color:#e8e4dc}
-    #gcal-bar{background:#0e0e0e;border:1px solid #ffffff08;border-radius:14px;padding:12px 16px;display:flex;flex-direction:column;gap:10px}
+    #gcal-bar{background:#0e0e0e;border:1px solid #ffffff08;border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
     .gcal-title{font-size:10px;color:#ffffff25;letter-spacing:2px;text-transform:uppercase}
     #gcal-status{font-size:12px;color:#00b894;margin-top:2px;font-family:'Fraunces',serif}
-    #gcal-btns{display:flex;flex-direction:column;gap:5px;width:100%}
-    #gcal-connect{background:linear-gradient(135deg,#4285f4,#34a853);border:none;border-radius:9px;color:#fff;font-family:'Space Mono',monospace;font-size:11px;padding:7px 13px;cursor:pointer;width:100%}
-    #gcal-sync-all{display:none;background:#ffffff08;border:1px solid #ffffff12;border-radius:9px;color:#ffffff40;font-family:'Space Mono',monospace;font-size:10px;padding:6px 10px;cursor:pointer;width:100%}
+    #gcal-btns{display:flex;gap:6px;flex-wrap:wrap}
+    #gcal-connect{background:linear-gradient(135deg,#4285f4,#34a853);border:none;border-radius:9px;color:#fff;font-family:'Space Mono',monospace;font-size:11px;padding:7px 13px;cursor:pointer}
+    #gcal-sync-all{display:none;background:#ffffff08;border:1px solid #ffffff12;border-radius:9px;color:#ffffff40;font-family:'Space Mono',monospace;font-size:10px;padding:6px 10px;cursor:pointer}
     #ia-bubble{background:#0e0e0e;border:1px solid #ffffff08;border-radius:14px;padding:14px 18px;display:flex;gap:12px;align-items:flex-start}
     #ia-avatar{width:30px;height:30px;border-radius:50%;background:#e8e4dc;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;color:#080808}
     #ia-label{font-size:10px;color:#ffffff25;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px}
@@ -338,11 +337,9 @@
         <button class="nav-arrow" id="week-next">›</button>
       </div>
       <div id="gcal-bar">
-        <div style="display:flex;align-items:center;gap:10px;width:100%">
-          <div style="font-size:16px;flex-shrink:0">📅</div>
-          <div style="flex:1"><div class="gcal-title">Google Calendar</div><div id="gcal-status">No conectado</div></div>
-        </div>
-        <div id="gcal-btns"><button id="gcal-sync-all">Sincronizar todo</button><button id="gcal-connect">Conectar</button></div>
+        <div style="font-size:16px;flex-shrink:0">📅</div>
+        <div style="flex:1"><div class="gcal-title">Google Calendar</div><div id="gcal-status">No conectado</div></div>
+        <div id="gcal-btns" style="display:flex;gap:6px;flex-wrap:wrap"><button id="gcal-sync-all">Sincronizar todo</button><button id="gcal-connect">Conectar</button></div>
       </div>
     </div>
     <div id="agenda-right">
@@ -794,7 +791,19 @@ function prevRem(){const n=document.getElementById('rem-nombre').value.trim(),h=
 // Edit modal
 function openEdit(id){editId=id;const t=allTareas.find(x=>x.id===id);if(!t)return;document.getElementById('edit-texto').value=t.texto;document.getElementById('edit-hora').value=t.hora||'';document.getElementById('edit-prio').value=t.prioridad;document.getElementById('edit-tipo').value=t.tipo;document.querySelectorAll('.day-chip').forEach(c=>c.classList.toggle('sel',!!(t.recurrentDays&&t.recurrentDays.includes(parseInt(c.dataset.d)))));const hr=!!(t.recurrentDays&&t.recurrentDays.length);document.getElementById('until-field').style.display=hr?'block':'none';if(t.recurrentUntil){document.getElementById('edit-until').value='custom';document.getElementById('edit-until-date').value=t.recurrentUntil;document.getElementById('edit-until-date').style.display='block';}else{document.getElementById('edit-until').value='8';document.getElementById('edit-until-date').style.display='none';}document.getElementById('edit-modal').classList.add('open');}
 function closeEdit(){document.getElementById('edit-modal').classList.remove('open');editId=null;}
-async function saveEdit(){const idx=allTareas.findIndex(x=>x.id===editId);if(idx===-1){closeEdit();return;}const sd=[...document.querySelectorAll('.day-chip.sel')].map(c=>parseInt(c.dataset.d)),hv=document.getElementById('edit-hora').value,us=document.getElementById('edit-until').value;let ru=null;if(sd.length){if(us==='custom')ru=document.getElementById('edit-until-date').value||null;else{const u=new Date();u.setDate(u.getDate()+parseInt(us)*7);ru=sfd(u);}}const upd={...allTareas[idx],texto:document.getElementById('edit-texto').value.trim()||allTareas[idx].texto,hora:hv||null,prioridad:document.getElementById('edit-prio').value,tipo:document.getElementById('edit-tipo').value,recurrentDays:sd.length?sd:null,recurrentUntil:ru,fecha:sd.length?null:(allTareas[idx].fecha||selDate)};await saveTask(upd);closeEdit();}
+async function saveEdit(){const idx=allTareas.findIndex(x=>x.id===editId);if(idx===-1){closeEdit();return;}const sd=[...document.querySelectorAll('.day-chip.sel')].map(c=>parseInt(c.dataset.d)),hv=document.getElementById('edit-hora').value,us=document.getElementById('edit-until').value;let ru=null;if(sd.length){if(us==='custom')ru=document.getElementById('edit-until-date').value||null;else{const u=new Date();u.setDate(u.getDate()+parseInt(us)*7);ru=sfd(u);}}const upd={...allTareas[idx],texto:document.getElementById('edit-texto').value.trim()||allTareas[idx].texto,hora:hv||null,prioridad:document.getElementById('edit-prio').value,tipo:document.getElementById('edit-tipo').value,recurrentDays:sd.length?sd:null,recurrentUntil:ru,fecha:sd.length?null:(allTareas[idx].fecha||selDate)};await saveTask(upd);
+  // Update GCal if already synced
+  if(gcalUser&&gcalToken&&upd.gcalEventId&&Object.keys(upd.gcalEventId).length){
+    if(upd.recurrentDays&&upd.recurrentDays.length){
+      // Update all synced occurrences
+      for(const [ds,eid] of Object.entries(upd.gcalEventId)){
+        try{await gSync(upd,ds);}catch(e){}
+      }
+    } else if(upd.fecha){
+      try{await gSync(upd,upd.fecha);}catch(e){}
+    }
+  }
+  closeEdit();}
 
 // GCal
 function initGCal(){if(!window.google){setTimeout(initGCal,500);return;}tokenClient=google.accounts.oauth2.initTokenClient({client_id:GCAL_ID,scope:GCAL_SCOPE,prompt:gcalUser?'':'consent',callback:async resp=>{isRef=false;if(resp.error){pendQ.forEach(r=>r.reject(resp.error));pendQ=[];return;}gcalToken=resp.access_token;tokenExp=Date.now()+(resp.expires_in-60)*1000;if(!gcalUser){try{const r=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+gcalToken}});const u=await r.json();gcalUser=u.email||'Conectado';localStorage.setItem('gcal-user',gcalUser);toast('✓ Google Calendar conectado');}catch(e){gcalUser='Conectado';}}updateGCalUI();pendQ.forEach(r=>r.resolve(gcalToken));pendQ=[];const un=allTareas.filter(t=>!t.gcalEventId||Object.keys(t.gcalEventId).length===0);if(un.length){for(const t of un){if(t.fecha>=todayStr()||(t.recurrentDays&&t.recurrentDays.length)){try{await gSync(t,t.fecha||todayStr());}catch(e){}await new Promise(r=>setTimeout(r,200));}}renderTasks();}}});setInterval(()=>{if(gcalUser&&Date.now()>tokenExp-5*60*1000)ref();},60*1000);updateGCalUI();if(gcalUser)ref();}
@@ -874,8 +883,19 @@ function renderHabits(){
 
 // Finance
 function renderFin(){
-  const mt=curMonthTxs(),ing=mt.filter(t=>t.tipo==='ingreso').reduce((s,t)=>s+t.monto,0),gas=mt.filter(t=>t.tipo==='gasto').reduce((s,t)=>s+t.monto,0),sal=ing-gas;
-  document.getElementById('fin-ing').textContent=ars(ing);document.getElementById('fin-gas').textContent=ars(gas);document.getElementById('fin-sal').textContent=ars(sal);document.getElementById('fin-sal').style.color=sal>=0?'#e8e4dc':'#ff4d4d';const ps=prevMonthSaldo();const psEl=document.getElementById('fin-prev-saldo');if(psEl)psEl.textContent=ps!==0?(ps>0?'+':'')+ars(ps)+' del mes anterior':'';
+  const mt=curMonthTxs();
+  const ing=mt.filter(t=>t.tipo==='ingreso').reduce((s,t)=>s+t.monto,0);
+  const gas=mt.filter(t=>t.tipo==='gasto').reduce((s,t)=>s+t.monto,0);
+  // Saldo acumulado = todos los ingresos - todos los gastos históricos
+  const totalIng=txs.filter(t=>t.tipo==='ingreso').reduce((s,t)=>s+t.monto,0);
+  const totalGas=txs.filter(t=>t.tipo==='gasto').reduce((s,t)=>s+t.monto,0);
+  const sal=totalIng-totalGas;
+  document.getElementById('fin-ing').textContent=ars(ing);
+  document.getElementById('fin-gas').textContent=ars(gas);
+  document.getElementById('fin-sal').textContent=ars(sal);
+  document.getElementById('fin-sal').style.color=sal>=0?'#e8e4dc':'#ff4d4d';
+  const psEl=document.getElementById('fin-prev-saldo');
+  if(psEl)psEl.textContent=sal>=0?'Saldo total acumulado':'';
   const cats={};mt.filter(t=>t.tipo==='gasto').forEach(t=>cats[t.cat]=(cats[t.cat]||0)+t.monto);
   const cl=document.getElementById('cat-list');cl.innerHTML='';
   Object.entries(cats).sort((a,b)=>b[1]-a[1]).forEach(([cat,total])=>{const pct=gas?Math.round(total/gas*100):0,color=CC[cat]||'#ffffff30';const row=document.createElement('div');row.className='cat-row';row.innerHTML='<div class="cat-row-header"><div class="cat-dot" style="background:'+color+'"></div><span class="cat-name">'+(CI[cat]||'📦')+' '+cat+'</span><span class="cat-amounts">'+ars(total)+' · '+pct+'%</span></div><div class="cat-bar"><div class="cat-bar-fill" style="width:'+pct+'%;background:'+color+'"></div></div>';cl.appendChild(row);});
@@ -892,6 +912,7 @@ function renderDash(){
   const now=new Date();
   document.getElementById('dash-eyebrow').textContent='hoy · '+DIASL[now.getDay()]+', '+now.getDate()+' de '+MESESL[now.getMonth()];
   const mt=curMonthTxs(),ing=mt.filter(t=>t.tipo==='ingreso').reduce((s,t)=>s+t.monto,0),gas=mt.filter(t=>t.tipo==='gasto').reduce((s,t)=>s+t.monto,0);
+  const totalSal=txs.filter(t=>t.tipo==='ingreso').reduce((s,t)=>s+t.monto,0)-txs.filter(t=>t.tipo==='gasto').reduce((s,t)=>s+t.monto,0);
   const hd=habits.filter(h=>h.completions&&h.completions[todayStr()]).length,th=tdp(todayStr()).length;
   document.getElementById('dash-cards').innerHTML='<div class="dash-card"><div class="dash-card-icon">📅</div><div class="dash-card-val" style="color:#e8e4dc">'+th+'</div><div class="dash-card-label">Tareas hoy</div></div><div class="dash-card"><div class="dash-card-icon">✦</div><div class="dash-card-val" style="color:#e8e4dc">'+hd+'/'+habits.length+'</div><div class="dash-card-label">Hábitos hoy</div></div><div class="dash-card"><div class="dash-card-icon">↑</div><div class="dash-card-val" style="color:#00e676;font-size:20px">'+ars(ing)+'</div><div class="dash-card-label">Ingresos mes</div></div><div class="dash-card"><div class="dash-card-icon">↓</div><div class="dash-card-val" style="color:#ff4d4d;font-size:20px">'+ars(gas)+'</div><div class="dash-card-label">Gastos mes</div></div>';
   const thl=tdp(todayStr()).sort((a,b)=>(a.hora?parseInt(a.hora.replace(':','')):9999)-(b.hora?parseInt(b.hora.replace(':','')):9999));
@@ -902,7 +923,7 @@ function renderDash(){
   if(!habits.length)dh.innerHTML='<div style="color:#ffffff18;font-family:Fraunces,serif;font-size:13px;padding:8px 0">Sin hábitos configurados</div>';
   else dh.innerHTML=habits.slice(0,5).map(h=>{const d2=!!(h.completions&&h.completions[todayStr()]);return '<div class="dash-hab-row"><div class="dash-hab-check" style="border-color:'+h.color+';'+(d2?'background:'+h.color:'')+'">'+( d2?'✓':'')+'</div><span class="dash-hab-name">'+h.emoji+' '+h.nombre+'</span></div>';}).join('');
   setTimeout(buildDashChart,50);
-  document.getElementById('dash-fin').innerHTML='<div class="dash-card"><div style="font-size:10px;color:#ffffff25;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px">Saldo</div><div style="font-family:Fraunces,serif;font-size:22px;font-weight:300;color:'+(ing-gas>=0?'#00e676':'#ff4d4d')+'">'+ars(ing-gas)+'</div></div><div class="dash-card"><div style="font-size:10px;color:#ffffff25;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px">Transacciones</div><div style="font-family:Fraunces,serif;font-size:22px;font-weight:300;color:#e8e4dc">'+mt.length+'</div></div>';
+  document.getElementById('dash-fin').innerHTML='<div class="dash-card"><div style="font-size:10px;color:#ffffff25;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px">Saldo total</div><div style="font-family:Fraunces,serif;font-size:22px;font-weight:300;color:'+(totalSal>=0?'#00e676':'#ff4d4d')+'">'+ars(totalSal)+'</div></div><div class="dash-card"><div style="font-size:10px;color:#ffffff25;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px">Transacciones</div><div style="font-family:Fraunces,serif;font-size:22px;font-weight:300;color:#e8e4dc">'+mt.length+'</div></div>';
   }
 
 // Charts
