@@ -14,7 +14,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@300;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     html,body{height:100%;background:#080808}
@@ -286,6 +285,178 @@
     #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#161616;border:1px solid #ffffff12;border-radius:11px;padding:11px 18px;font-size:12px;color:#e8e4dc;display:none;z-index:999;white-space:nowrap;animation:fadeIn .3s}
     #toast.ok{border-color:#00b89435;color:#00b894}
     #toast.err{border-color:#ff4d4d35;color:#ff4d4d}
+    /* ── New design tokens ── */
+    :root {
+      --accent: #7c6aff;
+      --accent-dim: #7c6aff18;
+      --accent-border: #7c6aff35;
+      --warm: #e8e4dc;
+      --warm-dim: #e8e4dc12;
+      --warm-border: #e8e4dc20;
+      --green: #00e676;
+      --red: #ff4d4d;
+      --gold: #ffb844;
+    }
+
+    /* ── Greeting ── */
+    #greeting-block {
+      padding: 0 0 4px;
+    }
+    #greeting-time {
+      font-size: 11px;
+      color: #ffffff25;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      font-family: 'Space Mono', monospace;
+    }
+    #greeting-name {
+      font-family: 'Fraunces', serif;
+      font-size: 32px;
+      font-weight: 300;
+      color: var(--warm);
+      line-height: 1.1;
+    }
+    #greeting-name span {
+      color: var(--accent);
+    }
+    #greeting-sub {
+      font-size: 12px;
+      color: #ffffff30;
+      margin-top: 6px;
+      font-family: 'Space Mono', monospace;
+    }
+
+    /* ── Hero stat cards ── */
+    .hero-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+    .hero-stat-card {
+      background: #0e0e0e;
+      border: 1px solid #ffffff08;
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-stat-card.accent-card {
+      background: var(--accent-dim);
+      border-color: var(--accent-border);
+    }
+    .hero-stat-card.green-card {
+      background: #00e67608;
+      border-color: #00e67630;
+    }
+    .hero-stat-num {
+      font-family: 'Fraunces', serif;
+      font-size: 40px;
+      font-weight: 500;
+      line-height: 1;
+      color: var(--warm);
+    }
+    .hero-stat-card.accent-card .hero-stat-num { color: var(--accent); }
+    .hero-stat-card.green-card .hero-stat-num { color: var(--green); }
+    .hero-stat-label {
+      font-size: 10px;
+      color: #ffffff30;
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 1px;
+    }
+    .hero-stat-icon {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      font-size: 18px;
+      opacity: 0.4;
+    }
+
+    /* ── Habit cards (new big style for dashboard) ── */
+    .hab-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 8px;
+    }
+    .hab-dash-card {
+      background: #0e0e0e;
+      border: 1px solid #ffffff08;
+      border-radius: 14px;
+      padding: 14px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: default;
+      transition: border-color .2s;
+    }
+    .hab-dash-card.done {
+      border-color: transparent;
+    }
+    .hab-dash-card .hdc-emoji { font-size: 22px; }
+    .hab-dash-card .hdc-name {
+      font-family: 'Fraunces', serif;
+      font-size: 11px;
+      color: #ffffff50;
+      text-align: center;
+      line-height: 1.2;
+    }
+    .hab-dash-card.done .hdc-name { color: var(--warm); }
+    .hab-dash-card .hdc-check {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      border: 2px solid #ffffff15;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px; color: #080808;
+      transition: all .2s;
+    }
+    .hab-dash-card.done .hdc-check {
+      border-color: transparent;
+      color: #080808;
+    }
+
+    /* ── Section label updated ── */
+    .section-label {
+      font-size: 11px;
+      color: #ffffff20;
+      font-family: 'Space Mono', monospace;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #ffffff06;
+    }
+
+    /* ── Agenda task cards updated ── */
+    .agenda-task-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid #ffffff06;
+    }
+    .agenda-task-row:last-child { border-bottom: none; }
+    .agenda-task-hora {
+      font-size: 11px;
+      color: var(--accent);
+      font-family: 'Space Mono', monospace;
+      width: 38px;
+      flex-shrink: 0;
+    }
+    .agenda-task-text {
+      font-family: 'Fraunces', serif;
+      font-size: 13px;
+      color: #ffffff60;
+      flex: 1;
+    }
   </style>
 </head>
 <body>
@@ -302,13 +473,46 @@
 <!-- DASHBOARD -->
 <div id="page-dashboard" class="page active">
 <div class="page-content">
-  <div style="padding-left:48px"><div class="eyebrow" id="dash-eyebrow"></div><div class="pg-title">Dashboard<span> _</span></div></div>
-  <div class="dash-grid" id="dash-cards"></div>
+  <!-- Greeting -->
+  <div id="greeting-block" style="padding-left:48px">
+    <div id="greeting-time"></div>
+    <div id="greeting-name">Buenas, <span>Matías</span> _</div>
+    <div id="greeting-sub" id="dash-eyebrow"></div>
+  </div>
+  <!-- Hero stats row -->
+  <div class="hero-stats" id="hero-stats">
+    <div class="hero-stat-card accent-card">
+      <span class="hero-stat-icon">🔥</span>
+      <div class="hero-stat-num" id="hs-streak">0</div>
+      <div class="hero-stat-label">racha hábitos</div>
+    </div>
+    <div class="hero-stat-card">
+      <span class="hero-stat-icon">📅</span>
+      <div class="hero-stat-num" id="hs-tasks">0</div>
+      <div class="hero-stat-label">tareas hoy</div>
+    </div>
+    <div class="hero-stat-card green-card">
+      <span class="hero-stat-icon">$</span>
+      <div class="hero-stat-num" id="hs-saldo" style="font-size:22px">$0</div>
+      <div class="hero-stat-label">saldo total</div>
+    </div>
+  </div>
+  <!-- Hábitos hoy -->
+  <div>
+    <div class="section-label">Hábitos hoy</div>
+    <div class="hab-cards-grid" id="dash-habs"></div>
+  </div>
+  <!-- Layout 2 col en desktop -->
   <div id="dash-layout">
     <div id="dash-left">
-      <div><div class="dash-sec-title">Agenda hoy</div><div id="dash-agenda"></div></div>
-      <div><div class="dash-sec-title">Hábitos hoy</div><div id="dash-habs"></div></div>
-      <div><div class="dash-sec-title">Finanzas del mes</div><div class="dash-grid" id="dash-fin"></div></div>
+      <div>
+        <div class="section-label">Agenda hoy</div>
+        <div id="dash-agenda"></div>
+      </div>
+      <div>
+        <div class="section-label">Finanzas del mes</div>
+        <div id="dash-fin" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
+      </div>
     </div>
     <div id="dash-right">
       <div class="chart-box"><div class="chart-label">Hábitos — progreso diario</div><div style="position:relative;height:200px"><canvas id="chart-dash-hab"></canvas></div></div>
@@ -919,23 +1123,55 @@ function renderFin(){
 }
 
 // Dashboard
+function getGreeting(){const h=new Date().getHours();if(h<12)return'Buenos días';if(h<19)return'Buenas tardes';return'Buenas noches';}
+function calcStreak(){if(!habits.length)return 0;const today=new Date();let streak=0;for(let i=0;i<365;i++){const d=new Date(today);d.setDate(today.getDate()-i);const ds=sfd(d);const allDone=habits.every(h=>h.completions&&h.completions[ds]);if(allDone)streak++;else if(i>0)break;}return streak;}
 function renderDash(){
   const now=new Date();
-  document.getElementById('dash-eyebrow').textContent='hoy · '+DIASL[now.getDay()]+', '+now.getDate()+' de '+MESESL[now.getMonth()];
+  // Greeting
+  const gt=document.getElementById('greeting-time');
+  const gs=document.getElementById('greeting-sub');
+  if(gt)gt.textContent=DIASL[now.getDay()]+', '+now.getDate()+' de '+MESESL[now.getMonth()];
+  const gn=document.getElementById('greeting-name');
+  if(gn)gn.innerHTML=getGreeting()+', <span>Matías</span> _';
+  if(gs)gs.textContent=tdp(todayStr()).length?' — '+tdp(todayStr()).length+' '+(tdp(todayStr()).length===1?'tarea':'tareas')+' para hoy':'— Sin tareas por ahora';
+  // Hero stats
   const mt=curMonthTxs(),ing=mt.filter(t=>t.tipo==='ingreso').reduce((s,t)=>s+t.monto,0),gas=mt.filter(t=>t.tipo==='gasto').reduce((s,t)=>s+t.monto,0);
   const totalSal=txs.filter(t=>t.tipo==='ingreso').reduce((s,t)=>s+t.monto,0)-txs.filter(t=>t.tipo==='gasto').reduce((s,t)=>s+t.monto,0);
-  const hd=habits.filter(h=>h.completions&&h.completions[todayStr()]).length,th=tdp(todayStr()).length;
-  document.getElementById('dash-cards').innerHTML='<div class="dash-card"><div class="dash-card-icon">📅</div><div class="dash-card-val" style="color:#e8e4dc">'+th+'</div><div class="dash-card-label">Tareas hoy</div></div><div class="dash-card"><div class="dash-card-icon">✦</div><div class="dash-card-val" style="color:#e8e4dc">'+hd+'/'+habits.length+'</div><div class="dash-card-label">Hábitos hoy</div></div><div class="dash-card"><div class="dash-card-icon">↑</div><div class="dash-card-val" style="color:#00e676;font-size:20px">'+ars(ing)+'</div><div class="dash-card-label">Ingresos mes</div></div><div class="dash-card"><div class="dash-card-icon">↓</div><div class="dash-card-val" style="color:#ff4d4d;font-size:20px">'+ars(gas)+'</div><div class="dash-card-label">Gastos mes</div></div>';
+  const th=tdp(todayStr()).length;
+  const streak=calcStreak();
+  const hsStreak=document.getElementById('hs-streak');if(hsStreak)hsStreak.textContent=streak;
+  const hsTasks=document.getElementById('hs-tasks');if(hsTasks)hsTasks.textContent=th;
+  const hsSaldo=document.getElementById('hs-saldo');if(hsSaldo){hsSaldo.textContent=ars(totalSal);hsSaldo.style.color=totalSal>=0?'var(--green)':'var(--red)';}
+  // Hábitos hoy - new card grid
+  const dh=document.getElementById('dash-habs');
+  if(dh){
+    if(!habits.length){dh.innerHTML='<div style="color:#ffffff18;font-family:Fraunces,serif;font-size:13px;padding:8px 0;grid-column:1/-1">Sin hábitos configurados</div>';}
+    else{
+      const sorted=[...habits].sort((a,b)=>(a.orden||0)-(b.orden||0));
+      dh.innerHTML=sorted.map(h=>{
+        const done=!!(h.completions&&h.completions[todayStr()]);
+        const bg=done?'background:'+h.color+'22;border-color:'+h.color+'50':'';
+        const chkBg=done?'background:'+h.color+';border-color:'+h.color:'border-color:#ffffff15';
+        return '<div class="hab-dash-card'+(done?' done':'')+'" style="'+bg+'">'+
+          '<div class="hdc-emoji">'+h.emoji+'</div>'+
+          '<div class="hdc-name">'+h.nombre+'</div>'+
+          '<div class="hdc-check" style="'+chkBg+'">'+(done?'✓':'')+'</div>'+
+          '</div>';
+      }).join('');
+    }
+  }
+  // Agenda hoy
   const thl=tdp(todayStr()).sort((a,b)=>(a.hora?parseInt(a.hora.replace(':','')):9999)-(b.hora?parseInt(b.hora.replace(':','')):9999));
   const da=document.getElementById('dash-agenda');
-  if(!thl.length)da.innerHTML='<div style="color:#ffffff18;font-family:Fraunces,serif;font-size:13px;padding:8px 0">Sin eventos hoy</div>';
-  else da.innerHTML=thl.slice(0,5).map(t=>'<div class="dash-task-item">'+(t.hora?'<span class="dash-task-hora">'+t.hora+'</span>':'')+t.texto+'</div>').join('');
-  const dh=document.getElementById('dash-habs');
-  if(!habits.length)dh.innerHTML='<div style="color:#ffffff18;font-family:Fraunces,serif;font-size:13px;padding:8px 0">Sin hábitos configurados</div>';
-  else dh.innerHTML=habits.slice(0,5).map(h=>{const d2=!!(h.completions&&h.completions[todayStr()]);return '<div class="dash-hab-row"><div class="dash-hab-check" style="border-color:'+h.color+';'+(d2?'background:'+h.color:'')+'">'+( d2?'✓':'')+'</div><span class="dash-hab-name">'+h.emoji+' '+h.nombre+'</span></div>';}).join('');
-  setTimeout(buildDashChart,50);
-  document.getElementById('dash-fin').innerHTML='<div class="dash-card"><div style="font-size:10px;color:#ffffff25;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px">Saldo total</div><div style="font-family:Fraunces,serif;font-size:22px;font-weight:300;color:'+(totalSal>=0?'#00e676':'#ff4d4d')+'">'+ars(totalSal)+'</div></div><div class="dash-card"><div style="font-size:10px;color:#ffffff25;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px">Transacciones</div><div style="font-family:Fraunces,serif;font-size:22px;font-weight:300;color:#e8e4dc">'+mt.length+'</div></div>';
+  if(da){
+    if(!thl.length)da.innerHTML='<div style="color:#ffffff18;font-family:Fraunces,serif;font-size:13px;padding:8px 0">Sin eventos hoy</div>';
+    else da.innerHTML=thl.slice(0,5).map(t=>'<div class="agenda-task-row"><span class="agenda-task-hora">'+(t.hora||'—')+'</span><span class="agenda-task-text">'+t.texto+'</span></div>').join('');
   }
+  // Finanzas
+  const df=document.getElementById('dash-fin');
+  if(df)df.innerHTML='<div class="dash-card"><div style="font-size:10px;color:#ffffff25;margin-bottom:5px;font-family:Space Mono,monospace">Ingresos</div><div style="font-family:Fraunces,serif;font-size:20px;font-weight:300;color:#00e676">'+ars(ing)+'</div></div><div class="dash-card"><div style="font-size:10px;color:#ffffff25;margin-bottom:5px;font-family:Space Mono,monospace">Gastos</div><div style="font-family:Fraunces,serif;font-size:20px;font-weight:300;color:#ff4d4d">'+ars(gas)+'</div></div>';
+  setTimeout(buildDashChart,50);
+}
 
 // Charts
 
