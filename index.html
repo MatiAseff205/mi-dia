@@ -829,7 +829,10 @@ function renderTasks(){
       '<div class="task-actions">'+(gcalUser&&!synced?'<button class="task-btn sb">🔄</button>':'')+(gcalUser&&synced?'<span class="cal-tag">✓</span>':'')+
       '<button class="task-btn eb">✎</button><button class="task-btn del db">✕</button></div>';
     card.querySelector('.task-check').addEventListener('click',async()=>{if(isRec){const cd={...(t.completedDates||{})};cd[selDate]=!done;await patchTask(t.id,{completedDates:cd});}else await patchTask(t.id,{completada:!t.completada});});
-    const sb=card.querySelector('.sb');if(sb)sb.addEventListener('click',()=>{gcalToken=null;tokenExp=0;if(tokenClient)tokenClient.requestAccessToken({prompt:''});});
+    const sb=card.querySelector('.sb');if(sb)sb.addEventListener('click',async()=>{
+      try{await gTok();await gSync(t,selDate);renderTasks();}
+      catch(e){gcalToken=null;tokenExp=0;updateGCalUI();toast('Token vencido — reconectá Calendar','err');}
+    });
     card.querySelector('.eb').addEventListener('click',()=>openEdit(t.id));
     card.querySelector('.db').addEventListener('click',e=>{
       e.stopPropagation();document.querySelectorAll('.del-menu').forEach(m=>m.remove());
@@ -919,7 +922,8 @@ function initGCal(){if(!window.google){setTimeout(initGCal,500);return;}
   const refreshOnInteraction=()=>{if(gcalUser&&(!gcalToken||Date.now()>=tokenExp)&&tokenClient){tokenClient.requestAccessToken({prompt:''});}document.removeEventListener('click',refreshOnInteraction);document.removeEventListener('touchstart',refreshOnInteraction);};
   document.addEventListener('click',refreshOnInteraction,{once:true});
   document.addEventListener('touchstart',refreshOnInteraction,{once:true});
-  tokenClient=google.accounts.oauth2.initTokenClient({client_id:GCAL_ID,scope:GCAL_SCOPE,prompt:gcalUser?'':'consent',callback:async resp=>{isRef=false;if(resp.error){pendQ.forEach(r=>r.reject(resp.error));pendQ=[];return;}gcalToken=resp.access_token;tokenExp=Date.now()+(resp.expires_in-60)*1000;if(!gcalUser){try{const r=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+gcalToken}});const u=await r.json();gcalUser=u.email||'Conectado';localStorage.setItem('gcal-user',gcalUser);toast('✓ Google Calendar conectado');}catch(e){gcalUser='Conectado';}}updateGCalUI();pendQ.forEach(r=>r.resolve(gcalToken));pendQ=[];const un=allTareas.filter(t=>!t.gcalEventId||Object.keys(t.gcalEventId).length===0);if(un.length){for(const t of un){if(t.fecha>=todayStr()||(t.recurrentDays&&t.recurrentDays.length)){try{await gSync(t,t.fecha||todayStr());}catch(e){}await new Promise(r=>setTimeout(r,200));}}renderTasks();}}});setInterval(()=>{if(gcalUser&&Date.now()>tokenExp)updateGCalUI();},30*1000);updateGCalUI();
+  tokenClient=google.accounts.oauth2.initTokenClient({client_id:GCAL_ID,scope:GCAL_SCOPE,prompt:gcalUser?'':'consent',callback:async resp=>{isRef=false;if(resp.error){pendQ.forEach(r=>r.reject(resp.error));pendQ=[];return;}gcalToken=resp.access_token;tokenExp=Date.now()+(resp.expires_in-60)*1000;if(!gcalUser){try{const r=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+gcalToken}});const u=await r.json();gcalUser=u.email||'Conectado';localStorage.setItem('gcal-user',gcalUser);toast('✓ Google Calendar conectado');}catch(e){gcalUser='Conectado';}}updateGCalUI();pendQ.forEach(r=>r.resolve(gcalToken));pendQ=[];// Don't auto-sync on token refresh to avoid duplicates
+renderTasks();}});setInterval(()=>{if(gcalUser&&Date.now()>tokenExp)updateGCalUI();},30*1000);updateGCalUI();
   // Auto-refresh token on load if already connected
   if(gcalUser){
     document.getElementById('gcal-status').textContent='Reconectando...';
