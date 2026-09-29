@@ -391,6 +391,11 @@
         <div style="flex:1"><div class="gcal-title">Google Calendar</div><div id="gcal-status">No conectado</div></div>
         <div id="gcal-btns" style="display:flex;gap:6px;flex-wrap:wrap"><button id="gcal-sync-all">Sincronizar todo</button><button id="gcal-connect">Conectar</button></div>
       </div>
+      <div id="notif-bar" style="background:#0e0e0e;border:1px solid #ffffff08;border-radius:14px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin-top:0">
+        <span style="font-size:14px">🔔</span>
+        <div style="flex:1"><div style="font-size:10px;color:#ffffff25;letter-spacing:2px;text-transform:uppercase">Notificaciones</div><div id="notif-status" style="font-size:12px;color:#ffffff40;font-family:'Fraunces',serif;margin-top:2px">No activadas</div></div>
+        <button id="notif-btn" style="background:linear-gradient(135deg,#7c6aff,#a855f7);border:none;border-radius:9px;color:#fff;font-family:'Space Mono',monospace;font-size:11px;padding:7px 13px;cursor:pointer">Activar</button>
+      </div>
     </div>
     <div id="agenda-right">
       <div id="ia-bubble">
@@ -683,7 +688,9 @@ onSnapshot(COL,snap=>{
   sync('ok');
   document.getElementById('ia-text').textContent='¡Hola! Contame qué tenés para hoy 📋';
   document.getElementById('send-btn').disabled=!document.getElementById('input').value.trim();
-  buildCal();buildWeek();renderTasks();updateHdr();renderDash();},()=>{sync('offline');document.getElementById('ia-text').textContent='Sin conexión 📡';});
+  buildCal();buildWeek();renderTasks();updateHdr();renderDash();
+  if(typeof scheduleAllNotifs==='function')scheduleAllNotifs();
+  },()=>{sync('offline');document.getElementById('ia-text').textContent='Sin conexión 📡';});
 
 onSnapshot(HCOL,snap=>{
   habits=snap.docs.map(d=>({id:d.id,...d.data()}));
@@ -705,6 +712,7 @@ onSnapshot(ACOL,snap=>{
 async function saveTask(t){sync('syncing');await setDoc(doc(db,'tareas',t.id),t);sync('ok');if(gcalUser)gSync(t,t.fecha||selDate).catch(()=>{});}
 async function delTask(id){
   const t=allTareas.find(x=>x.id===id);
+  if(t)cancelNotif(t.id);
   sync('syncing');await deleteDoc(doc(db,'tareas',id));sync('ok');
   if(t&&gcalUser&&t.gcalEventId&&Object.keys(t.gcalEventId).length){
     try{
@@ -1044,6 +1052,32 @@ document.getElementById('cal-next').addEventListener('click',()=>{calMonth.setMo
 document.getElementById('week-prev').addEventListener('click',()=>{if(weekOff<=0)return;weekOff--;buildWeek();});
 document.getElementById('week-next').addEventListener('click',()=>{weekOff++;buildWeek();});
 document.getElementById('gcal-sync-all').addEventListener('click',syncAll);
+
+// Notif button
+function updateNotifUI(){
+  const status=document.getElementById('notif-status');
+  const btn=document.getElementById('notif-btn');
+  if(!status||!btn)return;
+  if(!('Notification' in window)){
+    status.textContent='No soportado';btn.style.display='none';return;
+  }
+  if(Notification.permission==='granted'){
+    status.textContent='Activadas';status.style.color='#00b894';
+    btn.textContent='Reactivar';btn.style.background='transparent';
+    btn.style.border='1px solid #ffffff10';btn.style.color='#ffffff25';
+  } else if(Notification.permission==='denied'){
+    status.textContent='Bloqueadas — activá en config del iPhone';
+    btn.style.display='none';
+  } else {
+    status.textContent='No activadas';btn.textContent='Activar';
+  }
+}
+document.getElementById('notif-btn').addEventListener('click',async()=>{
+  await requestNotifPermission();
+  updateNotifUI();
+  if(Notification.permission==='granted')scheduleAllNotifs();
+});
+updateNotifUI();
 document.getElementById('edit-cancel').addEventListener('click',closeEdit);
 document.getElementById('edit-save').addEventListener('click',saveEdit);
 document.getElementById('edit-modal').addEventListener('click',e=>{if(e.target===document.getElementById('edit-modal'))closeEdit();});
@@ -1169,6 +1203,65 @@ document.getElementById('meta-save').addEventListener('click',()=>{const v=parse
 // Init
 setTimeout(initGCal,800);
 updateHdr();buildCal();buildWeek();renderDash();
+
+// Notifications
+async function requestNotifPermission(){
+  if(!('Notification' in window))return;
+  if(Notification.permission==='default'){
+    const perm=await Notification.requestPermission();
+    if(perm==='granted')toast('✓ Notificaciones activadas');
+  }
+}
+function scheduleNotif(tarea){
+  if(!('Notification' in window)||Notification.permission!=='granted')return;
+  if(!tarea.hora||!tarea.fecha)return;
+  const [h,m]=tarea.hora.split(':').map(Number);
+  const notifTime=new Date(tarea.fecha+'T'+String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':00');
+  const now=new Date();
+  const diff=notifTime.getTime()-now.getTime();
+  if(diff<=0)return; // ya pasó
+  if(diff>7*24*60*60*1000)return; // más de 7 días, no programar
+  const timeoutId=setTimeout(()=>{
+    new Notification('Mi Día — '+tarea.tipo,{
+      body:tarea.texto+(tarea.hora?' · '+tarea.hora:''),
+      icon:'/mi-dia/icon.png',
+      badge:'/mi-dia/icon.png',
+      tag:tarea.id,
+      silent:false
+    });
+  },diff);
+  // Store timeout id to cancel if task is deleted
+  window._notifTimeouts=window._notifTimeouts||{};
+  window._notifTimeouts[tarea.id]=timeoutId;
+}
+function cancelNotif(tareaId){
+  if(window._notifTimeouts&&window._notifTimeouts[tareaId]){
+    clearTimeout(window._notifTimeouts[tareaId]);
+    delete window._notifTimeouts[tareaId];
+  }
+}
+function scheduleAllNotifs(){
+  if(!('Notification' in window)||Notification.permission!=='granted')return;
+  // Clear existing
+  if(window._notifTimeouts)Object.values(window._notifTimeouts).forEach(clearTimeout);
+  window._notifTimeouts={};
+  // Schedule all future tasks with hora
+  allTareas.forEach(t=>{
+    if(t.hora&&t.fecha&&t.fecha>=todayStr())scheduleNotif(t);
+    // For recurrent tasks, schedule next occurrence
+    if(t.hora&&t.recurrentDays&&t.recurrentDays.length){
+      const now=new Date();
+      for(let i=0;i<7;i++){
+        const d=new Date(now);d.setDate(now.getDate()+i);
+        const ds=sfd(d);
+        if(t.recurrentDays.includes(d.getDay())&&(!t.recurrentUntil||ds<=t.recurrentUntil)){
+          scheduleNotif({...t,fecha:ds});
+        }
+      }
+    }
+  });
+}
+requestNotifPermission();
 </script>
 </body>
 </html>
