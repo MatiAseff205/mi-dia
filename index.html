@@ -224,7 +224,7 @@
     /* ── Desktop overrides ── */
     @media(min-width:768px){
       .page-content{max-width:100%;padding:54px 32px 60px}
-      #agenda-layout{display:grid;grid-template-columns:300px 1fr;gap:24px;align-items:start}
+      #agenda-layout{display:grid;grid-template-columns:300px 1fr 260px;gap:20px;align-items:start}
       #agenda-left{position:sticky;top:54px}
       #dash-layout{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
       #hab-top{display:grid;grid-template-columns:1fr 3fr;gap:20px;align-items:start}
@@ -285,6 +285,22 @@
     #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#161616;border:1px solid #ffffff12;border-radius:11px;padding:11px 18px;font-size:12px;color:#e8e4dc;display:none;z-index:999;white-space:nowrap;animation:fadeIn .3s}
     #toast.ok{border-color:#00b89435;color:#00b894}
     #toast.err{border-color:#ff4d4d35;color:#ff4d4d}
+    /* ── Notas rápidas ── */
+    #notas-wrap{display:flex;flex-direction:column;gap:0}
+    #notas-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+    #notas-title{font-size:11px;color:#ffffff20;font-family:'Space Mono',monospace;letter-spacing:2px}
+    #notas-add-btn{background:transparent;border:none;color:#ffffff20;cursor:pointer;font-size:18px;padding:0;line-height:1;transition:color .2s}
+    #notas-add-btn:hover{color:#ffffff60}
+    #notas-input-row{display:none;margin-bottom:10px;gap:6px;align-items:flex-end}
+    #notas-input-row.open{display:flex}
+    #notas-input{flex:1;background:#ffffff08;border:1px solid #ffffff12;border-radius:9px;padding:9px 12px;color:#e8e4dc;font-family:'Fraunces',serif;font-size:13px;outline:none;resize:none;min-height:38px;max-height:100px}
+    #notas-input:focus{border-color:#7c6aff40}
+    #notas-save-btn{width:34px;height:34px;border-radius:9px;border:none;background:#7c6aff;color:#fff;font-size:15px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+    .nota-item{padding:10px 12px;background:#0e0e0e;border:1px solid #ffffff08;border-radius:11px;margin-bottom:7px;display:flex;align-items:flex-start;gap:8px;animation:slideIn .2s ease}
+    .nota-texto{font-family:'Fraunces',serif;font-size:13px;color:#ffffff60;flex:1;line-height:1.4}
+    .nota-del{background:transparent;border:none;color:#ffffff12;cursor:pointer;font-size:11px;padding:2px;flex-shrink:0;transition:color .2s}
+    .nota-del:hover{color:#ff4d4d50}
+    #notas-empty{text-align:center;padding:24px 0;color:#ffffff12;font-size:12px;font-family:'Space Mono',monospace}
     :root{--accent:#7c6aff;--accent-dim:#7c6aff18;--accent-border:#7c6aff35;--green:#00e676;--red:#ff4d4d;--gold:#ffb844;--warm:#e8e4dc;}
     #greeting-block{padding:0 0 4px}
     #greeting-time{font-size:11px;color:#ffffff25;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;font-family:'Space Mono',monospace}
@@ -410,6 +426,19 @@
       <div id="tasks-section" style="display:none"><div id="tasks-header"><div id="tasks-count"></div><button id="clear-btn">Limpiar día</button></div></div>
       <div id="empty"><div class="icon">◈</div><p>Tu día está en blanco.</p><small>Contale qué tenés planeado</small></div>
       <div id="task-list"></div>
+    </div>
+    <!-- Notas rápidas -->
+    <div id="notas-wrap">
+      <div id="notas-header">
+        <span id="notas-title">Notas rápidas</span>
+        <button id="notas-add-btn" title="Agregar nota">+</button>
+      </div>
+      <div id="notas-input-row">
+        <textarea id="notas-input" placeholder="Anotá algo..." rows="2"></textarea>
+        <button id="notas-save-btn">↑</button>
+      </div>
+      <div id="notas-list"></div>
+      <div id="notas-empty">Sin notas todavía</div>
     </div>
   </div>
 </div>
@@ -638,7 +667,7 @@ import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, updateDoc
 const FB={apiKey:"AIzaSyB0oX62ZyI0-GL_DtFnzYWrUnaZriEArvo",authDomain:"mi-dia-agenda.firebaseapp.com",projectId:"mi-dia-agenda",storageBucket:"mi-dia-agenda.firebasestorage.app",messagingSenderId:"266360886420",appId:"1:266360886420:web:ecc0414d6f3d6821179081"};
 const GCAL_ID='293982751859-5udrcb7dd44j45qpl7ks15ailleocc3v.apps.googleusercontent.com';
 const GCAL_SCOPE='https://www.googleapis.com/auth/calendar.events';
-const db=getFirestore(initializeApp(FB)),COL=collection(db,"tareas"),HCOL=collection(db,"habitos"),TCOL=collection(db,"transacciones"),ACOL=collection(db,"ahorro");
+const db=getFirestore(initializeApp(FB)),COL=collection(db,"tareas"),HCOL=collection(db,"habitos"),TCOL=collection(db,"transacciones"),ACOL=collection(db,"ahorro"),NCOL=collection(db,"notas");
 
 let allTareas=[],selDate=todayStr(),weekOff=0;
 let calMonth=new Date();calMonth.setDate(1);
@@ -679,9 +708,12 @@ async function saveT(t){await setDoc(doc(db,'transacciones',t.id),t);}
 async function delT(id){await deleteDoc(doc(db,'transacciones',id));}
 async function saveA(a){await setDoc(doc(db,'ahorro',a.id),a);}
 async function delA(id){await deleteDoc(doc(db,'ahorro',id));}
+async function saveNota(n){await setDoc(doc(db,'notas',n.id),n);}
+async function delNota(id){await deleteDoc(doc(db,'notas',id));}
 function curMonthTxs(){const now=new Date(),yr=now.getFullYear(),mo=String(now.getMonth()+1).padStart(2,'0');return txs.filter(t=>t.fecha&&t.fecha.startsWith(yr+'-'+mo));}
 
 // Firebase
+let notas=[];
 sync('syncing');
 onSnapshot(COL,snap=>{
   allTareas=snap.docs.map(d=>({id:d.id,...d.data()}));
@@ -707,6 +739,10 @@ onSnapshot(TCOL,snap=>{
 onSnapshot(ACOL,snap=>{
   ahorros=snap.docs.map(d=>({id:d.id,...d.data()}));
   if(document.getElementById('page-finanzas').classList.contains('active'))renderAhorro();
+},()=>{});
+onSnapshot(NCOL,snap=>{
+  notas=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>b.ts-a.ts);
+  renderNotas();
 },()=>{});
 
 async function saveTask(t){sync('syncing');await setDoc(doc(db,'tareas',t.id),t);sync('ok');if(gcalUser)gSync(t,t.fecha||selDate).catch(()=>{});}
@@ -1019,6 +1055,49 @@ function renderDash(){
 
 
 
+
+// Notas
+function renderNotas(){
+  const list=document.getElementById('notas-list');
+  const empty=document.getElementById('notas-empty');
+  if(!list)return;
+  list.innerHTML='';
+  if(!notas.length){if(empty)empty.style.display='block';return;}
+  if(empty)empty.style.display='none';
+  notas.forEach(n=>{
+    const item=document.createElement('div');item.className='nota-item';
+    item.innerHTML='<div class="nota-texto">'+n.texto+'</div><button class="nota-del" data-id="'+n.id+'">✕</button>';
+    item.querySelector('.nota-del').addEventListener('click',()=>{delNota(n.id);toast('Nota eliminada');});
+    list.appendChild(item);
+  });
+}
+
+// Notas events
+const notasAddBtn=document.getElementById('notas-add-btn');
+const notasInputRow=document.getElementById('notas-input-row');
+const notasInput=document.getElementById('notas-input');
+const notasSaveBtn=document.getElementById('notas-save-btn');
+if(notasAddBtn){
+  notasAddBtn.addEventListener('click',()=>{
+    notasInputRow.classList.toggle('open');
+    if(notasInputRow.classList.contains('open'))notasInput.focus();
+  });
+}
+if(notasSaveBtn){
+  notasSaveBtn.addEventListener('click',()=>{
+    const txt=notasInput.value.trim();
+    if(!txt)return;
+    saveNota({id:Math.random().toString(36).slice(2)+Date.now().toString(36),texto:txt,ts:Date.now()});
+    notasInput.value='';
+    notasInputRow.classList.remove('open');
+    toast('✓ Nota guardada');
+  });
+}
+if(notasInput){
+  notasInput.addEventListener('keydown',e=>{
+    if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();notasSaveBtn.click();}
+  });
+}
 
 // Nav
 // Bottom nav
