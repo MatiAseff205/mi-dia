@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -745,7 +744,12 @@ onSnapshot(NCOL,snap=>{
   renderNotas();
 },()=>{});
 
-async function saveTask(t){sync('syncing');await setDoc(doc(db,'tareas',t.id),t);sync('ok');if(gcalUser)gSync(t,t.fecha||selDate).catch(()=>{});}
+async function saveTask(t){sync('syncing');await setDoc(doc(db,'tareas',t.id),t);sync('ok');
+  if(gcalUser){
+    const syncDate=t.fecha||selDate;
+    if(syncDate>=todayStr())gSync(t,syncDate).catch(()=>{});
+  }
+}
 async function delTask(id){
   const t=allTareas.find(x=>x.id===id);
   if(t)cancelNotif(t.id);
@@ -950,7 +954,7 @@ async function syncAll(){
           for(const dow of t.recurrentDays){
             const d=new Date(tn);d.setDate(tn.getDate()+((dow-tn.getDay()+7)%7)+w*7);
             const ds=sfd(d);
-            if(ds>=todayStr()){
+            if(ds>=todayStr()&&(!t.recurrentUntil||ds<=t.recurrentUntil)){
               if(t.gcalEventId&&t.gcalEventId[ds]){sk++;continue;}
               try{
                 await Promise.race([gSync(t,ds),new Promise((_,r)=>setTimeout(()=>r('timeout'),5000))]);
